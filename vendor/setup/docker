@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if ! which docker >/dev/null 2>&1 || [ "$(docker --version | awk '{ print $3 }' | \
+    sed -r 's/[^0-9]//g')" -lt 181 ]; then
+
+  echo "Updating Docker because it's old and lacks features."
+  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+  echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" | \
+    sudo tee /etc/apt/sources.list.d/docker.list
+
+  sudo apt-get update
+  sudo apt-get install docker-engine \
+    --no-install-recommends -yf
+else
+  echo "Your Docker is alright."
+  echo "Carry along with what you were doing."
+  echo "And have a great day!"
+fi

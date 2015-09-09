@@ -1,0 +1,92 @@
+#!/bin/sh
+
+# Pushes an image that was manually built up to hub.docker.com, this is
+# mostly used for things like ubuntu and alpine not automated builds.
+
+user=${DOCKER_USER:-envygeeks}
+root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
+[ "$DEBUG" ] && set -x
+set -e
+
+images_with_tags() {
+  for tag in $(docker images | grep -E "^$user/$1" | awk '{ print $2 }' | sort -u); do
+    printf "%s/%s:%s\n" "$user" "$1" "$tag"
+  done
+}
+
+push() {
+  for i in 1 2 3; do
+    if [ $i -gt 1 ]
+      then printf "\nRetrying to push  %s\n" $1
+      else printf "\nPushing %s to Docker\n" $1
+    fi
+
+    docker push $1 && break
+    tput clear || true
+  done
+}
+
+set_repo() {
+  if [ -f options/repo ]; then
+    repo=$(
+      cat options/repo
+    )
+  fi
+}
+
+set_user() {
+  if [ -f options/user ]; then
+    user=$(
+      cat options/user
+    )
+  fi
+}
+
+if [ "$CI" ]; then
+  docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" \
+    -p="$DOCKER_PASSWORD" > /dev/null 2>&1 <&- || {
+      >&2 echo "Unable to login."
+      exit 1
+    }
+fi
+
+if [ $# -eq 1 ]; then
+  repo=$(echo $1 | awk -F: '{ print $1 }')
+   tag=$(echo $1 | awk -F: '{ print $2 }')
+
+  if [ -d "dockerfiles/$repo" ]; then
+    cd dockerfiles/$repo
+    set_repo
+    set_user
+
+    if [ -x script/push ]; then script/push $tag
+    elif [ "$tag" ]; then
+      image=$user/$repo:$tag
+
+      if echo "$(images_with_tags)" | \
+          grep -qE "^$image\$"; then
+        push $image
+      else
+        >&2 printf "%s doesn't exist.\n" $url
+        exit 1
+      fi
+    else
+      for v in $(images_with_tags $1); do
+        push $v
+      done
+    fi
+  else
+    >&2 printf "Unknown repo %s" $repo
+    exit 1
+  fi
+elif [ $# -gt 1 ]; then
+  for v in "$@"; do
+    $0 $v
+  done
+else
+  for v in dockerfiles/*; do
+    $0 "$(
+      basename $v
+    )"
+  done
+fi

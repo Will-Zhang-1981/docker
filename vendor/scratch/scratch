@@ -1,0 +1,2 @@
+FROM scratch
+MAINTAINER Jordon Bedwell <jordon@envygeeks.io>

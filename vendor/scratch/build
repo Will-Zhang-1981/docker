@@ -1,0 +1,137 @@
+#!/bin/sh
+
+set -e
+tmpdir=$(mktemp -d)
+user=${DOCKER_USER:-envygeeks}
+root=$(cd "$(dirname $0)/.."; pwd)
+parent_root=$(cd "$(dirname "$(readlink -f $0)")/../.."; pwd)
+repo=${DOCKER_REPO:-$(cat $root/options/repo)}
+[ "$DEBUG" ] && set -x
+cd $root
+
+if [ $# -eq 1 ]; then
+  build=$1
+  shift
+
+elif [ $# -gt 0 ]; then
+  >&2 echo "Too many tags given, only one accepted."
+  exit 1
+fi
+
+rel() {
+  echo $1 | sed -r "s|^/tmp/||"
+}
+
+_trap() {
+  status=$?
+  trap - EXIT
+  teardown
+
+  rm -rf "$(rel $tmpdir)"
+  docker rmi -f rootfs > /dev/null 2>&1 || true
+  exit $status
+}
+
+setup() {
+  mkdir -p copy/$type
+  mkdir -p copy/$repo
+  mkdir -p copy/$tag
+  mkdir -p cache
+  return 0
+}
+
+teardown() {
+  [ -z "$(ls -A copy/$type 2> /dev/null)" ] && rm -rf copy/$type
+  [ -z "$(ls -A copy/$repo 2> /dev/null)" ] && rm -rf copy/$repo
+  [ -z "$(ls -A copy/$tag  2> /dev/null)" ] && rm -rf copy/$tag
+  [ -z "$(ls -A cache      2> /dev/null)" ] && rm -rf cache
+  return 0
+}
+
+trap -- _trap QUIT TERM INT EXIT
+rootfs_dockerfile=$(rel $tmpdir)/$(rel "$(mktemp -u)")
+       dockerfile=$(rel $tmpdir)/$(rel "$(mktemp -u)")
+
+  # options: options/ folder
+  # copy_repo: copy/$repo folder
+  # common: vendor/common (from main root)
+  # archive: The tar.gz file you write to.
+  # copy_type: copy/$type folder
+  # copy_tag: copy/$tag folder
+  # cache: cache/ folder.
+
+  options_dir=$(mktemp --tmpdir=$tmpdir -u)
+   common_dir=$(mktemp --tmpdir=$tmpdir -u)
+ copy_tag_dir=$(mktemp --tmpdir=$tmpdir -u)
+copy_repo_dir=$(mktemp --tmpdir=$tmpdir -u)
+copy_type_dir=$(mktemp --tmpdir=$tmpdir -u)
+  archive_tar=$(mktemp --tmpdir=$tmpdir -u)
+    cache_dir=$(mktemp --tmpdir=$tmpdir -u)
+
+mkdir -p "$(rel $tmpdir)"
+cp -R $parent_root/vendor/common "$(rel $common_dir)"
+cp $parent_root/vendor/scratch/rootfs $rootfs_dockerfile
+printf "Building the temporary rootfs image %s\n" "rootfs:$repo"
+docker build -f $rootfs_dockerfile -t "rootfs:$repo" .
+rm -rf $rootfs_dockerfile
+unset   rootfs_dockerfile
+tput clear || true
+
+for img in $(cat options/tags); do
+   type=$(echo $img  | awk -F/ '{ print $2 }')
+    tag=$(echo $img  | awk -F/ '{ print $1 }')
+
+  if [ "$build" ] && [ "$tag" != "$build" ]; then
+    continue
+  fi
+
+  touch "$(rel $archive_tar)"
+  printf "Building the image %s\n" $user/$repo:$tag
+  setup
+
+  docker run --rm "$@" \
+    --env="DEBUG=$DEBUG" \
+    --env="TRAVIS=$TRAVIS" \
+    --env="CI=$CI" \
+    \
+    --env="CACHE_DIR=$cache_dir" \
+    --env="ARCHIVE_TAR=$archive_tar" \
+    --env="OPTIONS_DIR=$options_dir" \
+    --env="COMMON_DIR=$common_dir" \
+    \
+    --volume=$root/cache:$cache_dir \
+    --volume="$root/$(rel $archive_tar):$archive_tar" \
+    --volume="$root/$(rel  $common_dir):$common_dir:ro" \
+    --volume=$root/options:$options_dir:ro \
+    \
+    --env="COPY_REPO_DIR=$copy_repo_dir" \
+    --env="COPY_TYPE_DIR=$copy_type_dir" \
+    --env="COPY_TAG_DIR=$copy_tag_dir" \
+    \
+    --volume=$root/copy/$type:$copy_type_dir:ro \
+    --volume=$root/copy/$tag:$copy_tag_dir:ro \
+    --volume=$root/copy/$repo:$copy_repo_dir:ro \
+    \
+    --env="REPO=$repo" \
+    --env="TYPE=$type" \
+    --env="USER=$user" \
+    --env="TAG=$tag" \
+    -it rootfs:$repo
+
+  cp $parent_root/vendor/scratch/scratch $dockerfile
+  entry=$(cat options/entries | awk "/^$repo[ ]+/ { print \$2 }")
+  [ -z "$entry" ] && entry=$(cat options/entries | awk  "/^$tag[ ]+/ { print \$2 }")
+  [ -z "$entry" ] && entry=$(cat options/entries | awk "/^$type[ ]+/ { print \$2 }")
+  printf "\nADD %s /" "$(rel $archive_tar)" >> $dockerfile
+  [ "$entry" ] && printf "\nENTRYPOINT [\"%s\"]" \
+    "$entry" >> $dockerfile
+
+  teardown
+  docker build -f $dockerfile -t $user/$repo:$tag .
+  rm -rf "$(rel $archive)" $dockerfile
+  tput clear || true
+done
+
+# Just to cleanup.
+docker rmi -f "rootfs:$repo" || true
+tput clear || true

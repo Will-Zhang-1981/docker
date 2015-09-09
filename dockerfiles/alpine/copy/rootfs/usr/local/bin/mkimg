@@ -1,0 +1,75 @@
+#!/bin/sh
+[ "$DEBUG" ] && set -x
+set -e
+
+arch=$(uname -i)
+rootfs=$(mktemp -d)
+release=$(cat $OPTIONS_DIR/release)
+testing_url="http://nl.alpinelinux.org/alpine/$release/testing"
+release_url="http://nl.alpinelinux.org/alpine/$release/main"
+tmp=$(mktemp -d)
+
+for v in $(cat $OPTIONS_DIR/apks); do
+	pkg=$(echo $v | awk -F: '{ print $2 }')
+	sha=$(echo $v | awk -F: '{ print $1 }')
+  wget -nv -O $tmp/$pkg $release_url/$arch/$pkg
+	if [ "$(sha256sum $tmp/$pkg)" != "$sha  $tmp/$pkg" ]; then
+		>&2 printf "%s sha error." $pkg
+		exit 1
+	fi
+done
+
+tar xzf $tmp/alpine-keys-*.apk -C $tmp etc/
+tar xzf $tmp/apk-tools-static-*.apk -C $tmp sbin/apk.static
+$tmp/sbin/apk.static --no-progress --keys-dir=$tmp/etc/apk/keys --initdb --root=$rootfs \
+	--repository=$release_url --update-cache add apk-tools busybox \
+			libc-utils alpine-baselayout alpine-keys musl
+
+cd $tmp
+$tmp/sbin/apk.static --no-progress --keys-dir=$tmp/etc/apk/keys --root=$rootfs \
+	--repository=$release_url --update fetch alpine-base
+tar xzf $tmp/alpine-base-*-r0.apk -C $rootfs etc/
+cd -> /dev/null
+
+cp -R $COMMON_DIR/* $rootfs
+[ "$(ls -A $COPY_TYPE_DIR)" ] && cp -R $COPY_TYPE_DIR/* /
+[ "$(ls -A $COPY_TYPE_DIR)" ] && cp -R $COPY_REPO_DIR/* /
+[ "$(ls -A $COPY_TAG_DIR )" ] && cp -R  $COPY_TAG_DIR/* /
+cp -R $COMMON_DIR/* /
+
+if [ "$TYPE" = "normal" ]; then
+	mkdir -p $rootfs/etc/startup1.d
+	mkdir -p $rootfs/etc/startup2.d
+	mkdir -p $rootfs/etc/startup3.d
+	mkdir -p $rootfs/etc/shutdown.d
+else
+	rm -rf $rootfs/usr/local/bin/chpst
+	rm -rf $rootfs/usr/local/bin/startup
+fi
+
+cp /etc/hosts $rootfs/etc/hosts
+cp /etc/resolv.conf $rootfs/etc/resolv.conf
+echo $release_url > $rootfs/etc/apk/repositories
+printf "@testing %s\n" $testing_url >> $rootfs/etc/apk/repositories
+for v in "$OPTIONS_DIR/pkgs/all" "$OPTIONS_DIR/pkgs/$REPO" "$OPTIONS_DIR/pkgs/$TAG" "$OPTIONS_DIR/pkgs/$TYPE"; do
+  if [ -f "$v" ]; then
+		cp $v $rootfs/tmp/pkgs
+		chroot $rootfs sh -ec "{
+			apk --no-progress --update add \$(cat /tmp/pkgs)
+			rm -rf /tmp/pkgs
+		}"
+	fi
+done
+
+chroot $rootfs sh -ec '{
+	mv /var/run/* /run
+	mv /var/lock  /run
+	rm -rf /var/run
+	ln -s /run/lock /var/lock
+	ln -s /run /var/run
+}'
+
+rm -rf $rootfs/etc/hosts
+rm -rf $rootfs/etc/resolv.conf
+docker-helper cleanup $rootfs
+tar -zf $ARCHIVE_TAR --numeric-owner -C $rootfs -c .

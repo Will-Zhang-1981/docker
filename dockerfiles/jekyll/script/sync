@@ -1,0 +1,34 @@
+#!/bin/sh
+[ "$DEBUG" ] && set -x
+root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
+set -e
+
+cd $root
+if [ $# -eq 1 ] && [ -f "vendor/sync/$1" ]; then
+  sync=$1 && shift
+  exec "vendor/sync/$sync" \
+    "$@"
+
+elif [ $# -gt 0 ]; then
+  >&2 echo "Unknown Image."
+  exit 1
+else
+  mkdir -p tags
+  rm -rf tags/*
+
+  for v in options/versions/*; do
+    v="$(basename $v)"
+    version=$(cat options/versions/$v)
+    mkdir -p tags/$v
+    tag=tags/$v
+
+    [ -f .dockerignore ] && cp .dockerignore $tag/.dockerignore
+    cp copy -R $tag/copy
+
+    mkdir -p $tag/copy/usr/share/ruby
+    cp options/gems/$v $tag/copy/usr/share/ruby/default-gems
+    cat Dockerfile | sed -r "s!__VERSION__!$version!" > $tag/Dockerfile
+    sed -ri "s/__TYPE__/$v/" $tag/Dockerfile
+    cp README.md $tag/README.md
+  done
+fi

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+for u in $(cat users.txt); do
+  usr=$(echo $u | awk -F: '{ print $1 }')
+  uid=$(echo $u | awk -F: '{ print $2 }')
+
+  ! getent passwd docker-$usr > /dev/null && {
+    sudo groupadd -rg $uid docker-$usr
+    sudo useradd   -u $uid -g $uid \
+      -rMd /srv/docker/home/$usr docker-$usr
+  }
+done

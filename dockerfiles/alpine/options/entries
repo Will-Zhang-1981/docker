@@ -1,0 +1,4 @@
+node   /usr/bin/node
+normal /usr/local/bin/startup
+python /usr/bin/python
+ruby   /usr/bin/ruby

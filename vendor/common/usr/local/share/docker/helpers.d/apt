@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+# Searches for `.apt` and installs.
+# @echo Nothing
+# @return 0
+
+install_from_apt_file() {
+  if [ "$1" = "apt" ] || [ -f ".apt" ]; then
+    sudo touch /etc/apt/ran-user-install
+    sudo apt-get update
+    sudo apt-get install --no-install-recommends \
+      -y "$(cat .apt)"
+    cleanup
+  fi
+}

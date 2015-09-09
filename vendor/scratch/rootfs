@@ -1,0 +1,8 @@
+FROM envygeeks/ubuntu:tiny
+RUN \
+  sed -ri '/^(deb-src|$|#)/d' /etc/apt/sources.list && apt-get update && \
+  apt-get install --no-install-recommends -yf xz-utils git \
+    ca-certificates wget
+
+COPY copy/rootfs /
+ENTRYPOINT ["/usr/local/bin/mkimg"]

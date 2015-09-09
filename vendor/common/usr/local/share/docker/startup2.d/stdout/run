@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+mkdir -p /run/stdout
+touch /run/stdout/tail.pids
+pids=
+
+if [ -d /etc/stdout.d ] && [ "$(ls -A /etc/stdout.d)" ]; then
+  for f in /etc/stdout.d/*; do
+    tail -qf "$f" &
+    pid=$!
+
+    echo $pid >> /run/stdout/tail.pids
+    pids=$pids" $pid"
+  done
+else
+  touch /etc/stdout.d/empty
+  tail -qf /etc/stdout.d/empty
+  echo $! > /run/stdout/tail.pids
+  pids=$pids" $pid"
+fi
+
+wait $pids

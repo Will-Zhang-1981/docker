@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+. /usr/local/share/docker/helpers
+if [ $# -gt 0 ]; then
+  cmd=$1
+  shift
+  "$cmd" \
+    "$@"
+fi

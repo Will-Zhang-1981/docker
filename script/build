@@ -1,0 +1,81 @@
+#!/bin/sh
+
+# Provides a means to build any image inside of this repository (via
+# dockerfiles) or any images for that matter. Some images provide a recipe and
+# if those images provide a recipe it gets used.
+
+user=${DOCKER_USER:-envygeeks}
+root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
+[ "$DEBUG" ] && set -x
+set -e
+
+build() {
+  printf "Building the image %s\n" $1
+  docker build -t $1 .
+}
+
+set_repo() {
+  if [ -f options/repo ]; then
+    repo=$(
+      cat options/repo
+    )
+  fi
+}
+
+set_user() {
+  if [ -f options/user ]; then
+    user=$(
+      cat options/user
+    )
+  fi
+}
+
+if [ $# -eq 1 ]; then
+    repo=$(echo "$1" | awk -F: '{ print $1 }')
+     tag=$(echo "$1" | awk -F: '{ print $2 }')
+  folder="$root/dockerfiles/$repo"
+
+  if [ -d "$folder" ]; then
+    cd "$folder"
+    set_repo
+    set_user
+
+    if [ -x script/build ]; then script/build $tag
+    elif [ -d tags ] && [ "$tag" ] && [ -d "tags/$tag" ]; then
+      cd tags/$tag && build $user/$repo:$tag
+
+    elif [ -d tags ] && [ "$tag" ]; then
+      >&2 printf "Unknown tag."
+      exit 1
+
+    elif [ -d tags ]; then
+      for v in tags/*; do
+        cd $v && build "$user/$repo:$(
+          basename $v
+        )"
+      done
+
+    elif [ -f options/tags ]; then
+      >&2 echo "This repo requires a build script."
+      exit 1
+
+    else
+      build "$user/$repo:${tag:-latest}" .
+    fi
+  else
+    >&2 echo "No repository."
+    exit 1
+  fi
+
+  tput clear || true
+elif [ $# -gt 1 ]; then
+  for v in "$@"; do
+    $0 $v
+  done
+else
+  for v in dockerfiles/*; do
+    $0 "$(
+      basename $v
+    )"
+  done
+fi

@@ -1,0 +1,266 @@
+#!/bin/sh
+
+# Get and return the full repository version part of a version string.
+# This does not return just the branch or just the repo.
+# @echo Nothing
+# @return $
+
+ruby_depend_repo() {
+  repo=$(echo "$1" | awk -F, '{
+    printf $2;
+    for (i = 3; i <= NF; i++) {
+      if ($i != "") { printf ","$i; }
+    }
+  }')
+
+  repo_branch=$(echo "$repo" | awk -F@ '{ print $2 }')
+    repo_name=$(echo "$repo" | awk -F@ '{ print $1 }')
+
+  repo_type=git
+  if ! echo $repo_name | grep -qE '^(http(s)?:\/\/|git:\/\/)'; then
+    repo_type=github
+  fi
+}
+
+# Get and return the full gem part of a version string.
+# @echo Nothing
+# @return $
+
+ruby_depend_gem() {
+  gem_version=$(echo "$1" | awk -F, '{ print $1 }' | awk -F@ '{ print $2 }')
+     gem_name=$(echo "$1" | awk -F, '{ print $1 }' | awk -F@ '{ print $1 }')
+}
+
+add_gemfile_dependency() {
+  ruby_depend_repo "$1"
+  ruby_depend_gem  "$1"
+
+  if [ "$repo" ]; then
+    # gem "n", "v", :git => "r", :branch => "b"
+    if [ "$repo_branch" ] && [ "$gem_version" ]; then
+      printf '\ngem "%s", "%s", :%s => "%s", :branch => "%s"\n' \
+        "$gem_name" "$gem_version" "$repo_type" "$repo_name" \
+          "$repo_branch" >> Gemfile
+
+    # gem "n", :git => "r", :branch => "b"
+    elif [ "$repo_branch" ]; then
+      printf '\ngem "%s", :%s => "%s", :branch => "%s"\n' \
+        "$gem_name" "$repo_type" "$repo_name" \
+          "$repo_branch" >> Gemfile
+
+    # gem "n", "v", :git => "r"
+    elif [ "$gem_version" ]; then
+      printf '\ngem "%s", "%s", :%s => "%s"\n' \
+        "$gem_name" "$gem_version" "$repo_type" \
+          "$repo_name" >> Gemfile
+
+    # gem "n", :git => "r"
+    else
+      printf '\ngem "%s", :%s => "%s"\n' \
+        "$gem_name" "$repo_type" "$repo_name" \
+          >> Gemfile
+    fi
+
+  # gem "n", "v"
+  elif [ "$gem_version" ]; then
+    printf '\ngem "%s", "%s"\n' \
+      "$gem_name" "$gem_version" >> Gemfile
+
+  # gem "n"
+  else
+    printf '\ngem "%s"\n' \
+      "$gem_name" >> Gemfile
+  fi
+}
+
+ruby_install_gem() {
+  ruby_depend_repo "$1"
+  ruby_depend_gem  "$1"
+  if [ "$repo" ]; then
+    >&2 echo "You cannot install a repo this way."
+    >&2 echo "Please consider using git_clone_ruby_repo."
+    exit 1
+  fi
+
+  gem install "$gem_name" \
+    -v"$gem_version" --no-document -- \
+      --use-system-libraries
+}
+
+# Checks out the source of a repository based on the version string.
+# @example gem@version,https://github.com:envygeeks/repo.git@branch
+# @example gem@version,git://github.com:envygeeks/repo.git@branch
+# @example gem@version,user/repo@branch
+# @example gem@version
+# @echo Nothing
+# @return 0
+
+git_clone_ruby_repo() {
+  ruby_depend_repo "$1"
+  ruby_depend_gem  "$1"
+
+  if [ -z "$repo" ]; then
+
+    # We do it like this here so that you can see if a gem is a repo
+    # and you can base entire actions on that.  For a good example of
+    # this go look at the Jekyll Dockerfiles.
+
+    echo ""
+    return
+  elif [ "$repo_type" = "github" ]; then
+    repo_name="https://github.com/$repo_name.git"
+  fi
+
+  temp=$(mktemp -d)
+  if [ "$repo_branch" ]; then
+    git clone --depth=1 --single-branch --branch=master \
+      $repo_name $temp
+  else
+    git clone --depth=1 --single-branch \
+      --branch=$repo_branch $repo_name $temp
+  fi
+
+  echo $temp
+}
+
+# Checks to see if a previous Gemfile labeled as (old) exists.
+# @echo (yes -> true) | (no -> false)
+# @return 0
+
+has_previous_gemfile() {
+  if [ -d vendor/ ] && [ "$(find vendor/ -type f -name Gemfile.old.\*)" ]
+    then true
+    else false
+  fi
+}
+
+# Creates a vendor/ folder and then copys the Gemfile to vendor/Gemfile.old.*
+# @echo Nothing
+# @return 0
+
+backup_gemfile() {
+  if [ -f Gemfile ]; then
+    mkdir -p vendor/
+    cp Gemfile "vendor/Gemfile.old.$(date +%m%d%Y)"
+  fi
+}
+
+# Copies all the gems provided by /usr/share/ruby/default-gems to Gemfile
+# @echo Nothing
+# @return 0
+
+copy_default_gems_to_gemfile() {
+  if [ -f Gemfile ] && [ -f /usr/share/ruby/default-gems ]; then
+    for gem in $(cat /usr/share/ruby/default-gems); do
+      if echo $gem | grep -q "@"; then
+        name=$(echo $gem | awk -F@ '{ print $1 }')
+        vers=$(echo $gem | awk -F@ '{ print $2 }')
+        printf "gem \"%s\", \"%s\"\n" "$name" "$vers" >> Gemfile
+      else
+        printf "gem \"%s\"\n" "$gem" >> \
+          Gemfile
+      fi
+    done
+  fi
+}
+
+# Installs the default gems into the global gem directory.
+# @echo Nothing
+# @return 0
+
+install_default_gems() {
+  if [ -f /usr/share/ruby/default-gems ]; then
+    gems=; for v in $(cat /usr/share/ruby/default-gems); do
+      gems=$gems" $(echo $v |sed -r 's/@/:/g')"
+    done
+
+    gem install --no-document $gems -- \
+      --use-system-libraries
+  fi
+}
+
+# Configures Nokogiri and Nokogumbo to use system libs and includes.
+# @echo Nothing
+# @return 0
+
+configure_nokogiri() {
+  bundle config build.nokogiri  "--use-system-libraries=true --with-xml2-include=/usr/include/libxml2"
+  bundle config build.nokogumbo "--use-system-libraries=true --with-xml2-include=/usr/include/libxml2"
+}
+
+# Triggers an install or exists if one was already ran.
+# @echo On Error
+# @return 1 | 0
+
+___ruby_scream_fatality_or_install() {
+  if [ $1 -gt 2 ] && user_pkgs_installed; then
+    >&2 echo "There was an install error."
+    exit 1
+  elif [ $1 -gt 1 ]; then
+    install_ruby_depends
+    install_user_pkgs_from_file
+  fi
+}
+
+# Installs gems from a users gemfile w/ safety.
+# @echo Nothing
+# @return 1 | 0
+
+install_users_gems() {
+  configure_nokogiri
+  if [ -f Gemfile ]; then
+    for i in 1 2 3; do
+      ___ruby_scream_fatality_or_install $i
+      if grep -qE "git(hub)?\s+(:|=>)\s+" Gemfile || [ ! -z "$BUNDLE_CACHE" ]; then
+        if [ -z "$BUNDLE_CACHE" ]
+          then echo "$BUNDLE_ARGS" | xargs -n1 | xargs -- bundle install && break
+          else echo "$BUNDLE_ARGS" | xargs -n1 | xargs -- bundle install --path \
+            vendor/bundle && break
+        fi
+      else
+        echo "$BUNDLE_ARGS" | xargs -n1 | xargs -- bundle \
+          install && break
+      fi
+    done
+  fi
+}
+
+# Sloppily tries to make the Gemfile uniq, this is not bulletproof.
+# @echo Nothing
+# @return 0
+
+make_gemfile_uniq() {
+  awk '/^[ ]*end$/ || /^[ ]*group[ ]+/ || !NF || !_[$0]++' Gemfile > Gemfile.new
+  mv  Gemfile.new \
+    Gemfile
+}
+
+# Installs development depenencies.
+# @echo Nothing
+# @return 0
+
+install_ruby_depends() {
+  if [ "$(operating_system)" = "alpine" ]; then
+    sudo apk --update add ruby-dev libxml2-dev libxslt-dev yaml-dev git \
+        build-base libffi-dev readline-dev
+  else
+    sudo apt-get install ruby ruby-dev libxml2-dev libxslt1-dev \
+      libyaml-dev git build-essential libffi-dev \
+        libreadlin6-dev --no-install-recommends -y
+  fi
+}
+
+# Uninstalls development dependencies
+# @echo Nothing
+# @return 0
+
+uninstall_ruby_depends() {
+  if [ "$(operating_system)" = "alpine" ]; then
+    sudo apk del ruby-dev libxml2-dev libxslt-dev yaml-dev git \
+        build-base libffi-dev readline-dev
+  else
+    sudo apt-get autoremove ruby ruby-dev libxml2-dev libxslt1-dev \
+      libyaml-dev git build-essential libffi-dev \
+        libreadlin6-dev --no-install-recommends --purge -y
+  fi
+}

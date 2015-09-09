@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# Provides an interface to testing Ubuntu and Alpine latest images which
+# feature and hold the docker-helpers stuff.  The reason we only test on those
+# images (even if others have it) is because we are are only testing
+# the helpers and not the images themselves (for now.)
+
+user=${DOCKER_USER:-envygeeks}
+root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
+[ "$DEBUG" ] && set -x
+set -e
+
+if [ $# -eq 1 ] && [ -d "dockerfiles/$1" ]; then
+  cd "dockerfiles/$1"
+  if [ -x script/test ]; then
+    printf "Testing %s" $1
+    script/test
+  else
+    >&2 printf "This image is not testable."
+    exit 1
+  fi
+elif [ $# -gt 1 ]; then
+  for v in "$@"; do
+    $0 "$v"
+  done
+else
+  for v in dockerfiles/*; do
+    if [ -x $v/script/test ]; then
+      $0 "$(
+        basename $v
+      )"
+    fi
+  done
+fi

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Runs setup tasks from vendor/setup so that you can do things like create
+# all of the docker-* users and anything else in the future.
+
+set -e
+[ "$DEBUG" ] && set -x
+root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
+file="$root/vendor/setup/$1"
+shift
+
+if [ -f "$file" ]
+  then exec "$file" "$@"
+  else echo "Unknown script."
+fi

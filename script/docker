@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# Provides a wrapper for Docker that provides mem, docker-compose (as compose)
+# and also wraps around restart making it truly restart for services that tend
+# to fail upon restart for some reason.
+
+[ "$DEBUG" ] && set -x
+root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
+compose="$root/vendor/docker/compose"
+set -e
+to=$1
+
+if [ "$1" ]
+  then shift
+  else /usr/bin/docker --help
+fi
+
+case $to in
+  compose)
+    file=
+    for file in /etc/docker/compose.yml /srv/docker/compose.yml \
+        "$DOCKER_RECIPES/compose.yml" compose.yml; do
+      [ -f "$file" ] && break || file=;
+    done
+
+    if [ "$file" ]; then
+      set -- $file "$@"
+      set --  "-f" "$@"
+    fi
+
+    if [ "$3" = "restart" ]; then
+      for v in "stop -t 60" "rm -f" "up -d"; do
+        echo $v | xargs -n1 | xargs $compose -f $file
+      done
+    else
+      $compose "$@"
+    fi
+  ;;
+
+  clean)
+       images=$(docker images --filter='dangling=true' -q --no-trunc)
+    instances=$(docker     ps --filter='status=exited' -q --no-trunc)
+    [ "$instances" ] && docker rm  -f $instances 2>/dev/null
+    [ "$images"    ] && docker rmi -f $images    2>/dev/null
+  ;;
+
+  mem) $root/vendor/docker/mem;;
+    *) exec /usr/bin/docker "$to" "$@"
+esac

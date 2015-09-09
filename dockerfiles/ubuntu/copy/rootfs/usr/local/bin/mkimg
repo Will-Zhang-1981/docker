@@ -1,0 +1,82 @@
+#!/bin/sh
+[ "$DEBUG" ] && set -x
+set -e
+
+arch=$(uname -i)
+rootfs=$(mktemp -d)
+release=$(cat $OPTIONS_DIR/release)
+partner_url="https://partner-images.canonical.com/core"
+dpkg_arch=$(dpkg --print-architecture)
+tmp=$(mktemp -d)
+
+cd $tmp
+gpg  --keyserver keyserver.ubuntu.com --recv-keys 7db87c81
+wget -nv $partner_url/$release/current/SHA256SUMS.gpg
+wget -nv $partner_url/$release/current/SHA256SUMS
+gpg --verify SHA256SUMS.gpg SHA256SUMS
+
+img=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $2 }' | sed -r 's/^\*//')
+sha=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $1 }')
+
+if [ "$(sha256sum $CACHE_DIR/ubuntu-core.tar.gz | awk '{ print $1 }')" = "$sha" ]; then
+	cp $CACHE_DIR/ubuntu-core.tar.gz $img
+else
+	echo "Updating cached Ubuntu."
+	wget -nv "$partner_url/$release/current/$img"
+	cp $img $CACHE_DIR/ubuntu-core.tar.gz
+fi
+
+tar xzf $img -C $rootfs
+cd -> /dev/null
+
+rm -rf $rootfs/etc/hosts
+rm -rf $rootfs/etc/resolv.conf
+cp /etc/resolv.conf $rootfs/etc/resolv.conf
+cp /etc/hosts $rootfs/etc/hosts
+
+chroot "$rootfs" sh -ec "{
+	sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
+	echo \"debconf debconf/frontend select Noninteractive\" | debconf-set-selections
+	echo 'Dpkg::Options { \"--force-confdef\"; \"--force-confold\"; }' > /etc/apt/apt.conf.d/local
+	echo \"exit 101\" > /usr/sbin/policy-rc.d policy-rc.d
+	sed -ri '/^(deb-src\s+|$|#)/d' /etc/apt/sources.list
+	chmod uog+x /usr/sbin/policy-rc.d
+
+	apt-get update
+	apt-get dist-upgrade -yf
+	apt-get install --no-install-recommends -yf locales deborphan
+	apt-get autoremove --purge \$(deborphan --guess-all) deborphan -yf
+	apt-get autoclean
+	apt-get clean
+}"
+
+cp -R $COMMON_DIR/* $rootfs
+[ "$(ls -A $COPY_TYPE_DIR)" ] && cp -R $COPY_TYPE_DIR/* /
+[ "$(ls -A $COPY_REPO_DIR)" ] && cp -R $COPY_REPO_DIR/* /
+[ "$(ls -A $COPY_TAG_DIR )" ] && cp -R  $COPY_TAG_DIR/* /
+cp -R $COMMON_DIR/* /
+
+if [ "$TYPE" = "normal" ]; then
+	mkdir -p $rootfs/etc/startup1.d
+	mkdir -p $rootfs/etc/startup2.d
+	mkdir -p $rootfs/etc/startup3.d
+	mkdir -p $rootfs/etc/shutdown.d
+else
+	rm -rf $rootfs/usr/local/bin/chpst
+	rm -rf $rootfs/usr/local/bin/startup
+fi
+
+for v in "$OPTIONS_DIR/pkgs/all" "$OPTIONS_DIR/pkgs/$TYPE" "$OPTIONS_DIR/pkgs/$TAG"; do
+	if [ -f "$v" ]; then
+		cp $v $rootfs/tmp/pkgs
+		chroot $rootfs sh -ec "{
+			apt-get install --no-install-recommends -yf \$(cat /tmp/pkgs)
+			rm -rf /tmp/pkgs
+		}"
+	fi
+done
+
+rm -rf $rootfs/etc/hosts
+rm -rf $rootfs/etc/resolv.conf
+docker-helper cleanup $rootfs
+tar -zf $ARCHIVE_TAR --numeric-owner -C $rootfs -c .
