@@ -9,7 +9,14 @@ RUN \
   apk --update add readline readline-dev libxml2 libxml2-dev libxslt  \
     libxslt-dev python zlib zlib-dev ruby ruby-dev yaml \
       yaml-dev libffi libffi-dev build-base nodejs ruby-io-console \
-        ruby-irb ruby-json ruby-rake ruby-rdoc git && \
+        ruby-irb ruby-json ruby-rake ruby-rdoc git nginx && \
+
+  mv /etc/nginx/conf.d /tmp/nginx.conf.d && \
+  rm -rf /etc/nginx && mkdir -p /etc/nginx && \
+  cd /tmp && git clone https://github.com/envygeeks/docker.git && \
+  cd docker/dockerfiles/nginx && cp copy/etc/nginx/* /etc/nginx && \
+  mv /tmp/nginx.conf.d /etc/nginx/conf.d && \
+  rm -rf /tmp/docker && cd ~/ && \
 
   mkdir -p /home/jekyll && \
   addgroup -Sg 1000 jekyll &&  \
@@ -50,6 +57,5 @@ RUN \
   rm -rf /usr/lib/ruby/gems/*/cache/*.gem && \
   docker-helper cleanup
 
-VOLUME /srv/jekyll
 WORKDIR /srv/jekyll
-EXPOSE 4000
+EXPOSE 4000 80
