@@ -1,0 +1,47 @@
+before_script: script/travis build
+after_success: script/travis push
+script: script/travis test
+sudo: 9000
+env:
+  matrix:
+  - DOCKER_TRAVIS_REPO=ubuntu
+  - DOCKER_TRAVIS_REPO=alpine
+  global:
+    - secure: "
+        gr4VvqhmaRffcoQzJHNbR+z77xiBqH4lRWplYUgWmOjwasEXR5/eNvYRdUuymlBgIadkDV\
+        ySpmCb3yP+SuW5mjKM1OmtFmrWkYIvt90gc4O1V5EEGv/XYEJTlw1bYbkqwG3emv/2GgZg\
+        4wm7eJJqD/vU7dopZcjZeZEQlFp1fDnii0w8D20WpMnyuLynvma0Hvp6s/pUG8dHDFqeqL\
+        ZUQAOPN907xwm8icA8g4PmjYbxcImlZLkwf+ENODk65b4uxXBNhoQ0FuLniKSnkgrd/j1I\
+        TWBda3MM/60QCvYDbwFGQmhJayi/cPrd+6Fe/udhUGL4RV6smrPff99K7IZGfMIj9eLOkQ\
+        OGCjI+hAPmahIP1P7vhJKYkctMUUskUox4/3jm97qBvVCfQXaijYbbRO0bdGqYlWAQ1AwP\
+        dkenPVk6Ki3rTh/NsNPHkiUg7g6SuwC++beaIi0YGz0kZuhBiXFZO7/2l23cGq/YAhJNo7\
+        W0T8BegeKUors8L+L4iZTNmswcLzYJFTRzqCfOcJPMvmrvfOgr/VbWB5ejaHNj81W9uuqW\
+        TfN06SJ4NPi7tbNj8L46A+bwc4VujKwype4a5xuhzczsnBschYe0fuNd4FsameWhUznEw4\
+        iaMNxIKa4AbdjHSj51eql50STPtl8QiMT57ZqRXKxps+/obFQjTcI=\
+      "
+
+    - secure: "\
+        Y/YukPeJtK43vWNz9Lua+jNSqY2OESkqd0aY6wIpxf14tGEaco8S44RJ4UF3ZVDoVD9teD\
+        lSV6cXSucfSMp5/iZMpe5bHvr6t8pfm2POCODBq1Fr8c5XqEbNihx58OhiT8ASHEfrNN5z\
+        9svHPnrafyeCdm7SO3naw7qjxWqwwH34I3zJwh0RSC9LOniYO4D5nr/66F6Q33vN4hy4N4\
+        3A1cAC0Z4ZjbLL2AYm0rzRFpjb3w8mLRD8569MTrandtZ7GCILNxlrNcOrFjJWABSYd/PS\
+        MwIcuLrK3KiwRUp4t/r4R6EknWYLaowrHznIEE23nrrH95bWdyFd4OdCkVXcwU7b53emvd\
+        KISSMou0hjDo31Q2oIvP0keGHK63wDDxIA8LgoP5q49PtHJOs3G2TIwNWEGc7sOWGGykBu\
+        1xyhDB03cl1GcmuaQKwtVmMZP8Ks+X0gQ+5LF9EYVmh1xoA2WHTjuf90WU2Hu5Dr2RfqHT\
+        yx4dQoLD1KxpjPfHfoV+DadylrTvtV+EoBMEIAlT8mYuy5DuONSmyeyy8l+nk9am6FPTCC\
+        ziKQtlOxvaowwlNz5jrpaA9QkFjIeIpQjTh2H0YBXPpDENxeE9w1V+/OlqgZFmlsIm23Vx\
+        iDdoOtZd5+bz3mzWqHXy9Yx5HAFG0O/k7U/wXYDXbCZ0ayq+wHg2c=\
+      "
+
+    - secure: "\
+        cNfo+c5/85HLHP/V6DmNNJT5yHc83O5IPeGR7ZJhniE5CErzovSkmQ8Bcen/xPO0SP9Nb1\
+        FPmFyhqg2ySCsRs5Zq/wHRosSzE04tE+eCfRmFWLtzg0l8x5bBh2DpGwLGjLWFbc5idqwE\
+        o6K3gYdq3SkVp7PW3mYyH/1Xh5ntZjDkcSn6KGMYcX33DeK0gr6Y1G3PadkEsdqFZ4UqHA\
+        /8SELzFecfg+Vx0mYeqUGwiGkB3m6zxcX+TQkJO/RvR6G7wm+TwqGkU3vhR9PNPMIqWJTx\
+        /+Ixn6Q7JLTPV7oMg+xb/QJyUf/lp/UfD7f3Lyj/jHhbutSGkRlGJA89x1eEPizMBkYqHX\
+        i18s2TgsINggJCvrBRfEAYd3m/nDpfscY1qdbhrztI4AE24t5BUqQfFZ188lDOdwGrWyZ+\
+        O6Luz0i9mIeLS6zhirRHW5M+xOKdaIy9QV9IAiVXfQA50/qZr2m/9O9b7ap72CRYFwh24F\
+        PTj9cjbXLQ0+fwn8trnx1PBhdIN3xhd5J9TItHFxqD6JLd+wFPr31U5m7jS1E+k/BkfTkq\
+        iwbDca3OffVBs8cRAcqDtTf6UQcoWApH5jfibK5cNWOFKGylxcWgffz5YMWMdu+0tw/lZd\
+        nZgVkimUMouRW1LpaGrUwCVTEtPbakLt0xpJrCsat3599A9A+7f8A=\
+      "
