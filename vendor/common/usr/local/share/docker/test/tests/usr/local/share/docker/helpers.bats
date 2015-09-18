@@ -1,6 +1,10 @@
 . /usr/local/share/docker/test/helpers
 . /usr/local/share/docker/helpers
 
+setup() {
+  tmpdir=$(mktemp -d)
+}
+
 teardown() {
   delgroup test1 1>/dev/null 2>&1 || true
   delgroup test2 1>/dev/null 2>&1 || true
@@ -11,11 +15,11 @@ teardown() {
   # this way we can keep our tests clean and short and to the point of what
   # they are testing, rather than muddling your view of them.
 
+  rm -rf $tmpdir 2>/dev/null || true
   rm -rf /var/log/test.log 2>/dev/null || true
   rm -rf /etc/startup2.d/stdout 2>/dev/null || true
   rm -rf /var/log/test/test.log 2>/dev/null || true
   rm -rf /var/log/test 2>/dev/null || true
-  rm -rf /test.apk-new 2>/dev/null || true
   rm -rf /test.txt 2>/dev/null || true
   rm -rf /test 2>/dev/null || true
 }
@@ -26,9 +30,15 @@ teardown() {
 }
 
 @test "#cleanup: ! *.apk-new" {
-  touch /test.apk-new
-  run cleanup
-  refute_file /hello.apk-new
+  touch $tmpdir/test.apk-new
+  run cleanup $tmpdir
+  refute_file $tmpdir/test.apk-new
+}
+
+@test "#cleanup: ! *.dpkg-dist" {
+  touch $tmpdir/test.dpkg-dist
+  run cleanup $tmpdir
+  refute_file $tmpdir/test.dpkg-dist
 }
 
 @test "#enable_stdout_logger: cp /usr/share/docker/startup2.d/stdout -> /etc/startup2.d/stdout" {

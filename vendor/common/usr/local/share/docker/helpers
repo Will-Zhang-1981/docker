@@ -72,12 +72,14 @@ cleanup() {
   rm -rf "$base_dir/media"
   rm -rf "$base_dir/mnt"
 
-  rm -rf "$base_dir/tmp/"*
   rm -rf "$base_dir/run/network"
   rm -rf "$base_dir/var/spool/cron"
   rm -rf "$base_dir/run/sendsigs.omit.d"
   rm -rf "$base_dir/run/resolvconf"
   rm -rf "$base_dir/run/shm"
+
+  find "$base_dir/tmp" ! -path "$base_dir/tmp" \
+    ! -iname bats.\*.src -delete
 }
 
 # Enables the Docker stdout logger that is by default disabled.
