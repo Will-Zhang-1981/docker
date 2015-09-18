@@ -23,8 +23,9 @@ cleanup() {
 
   find "$base_dir/" -type f -iname \*.dpkg-dist -delete
   find "$base_dir/" -type f -iname \*.apk-new   -delete
-  find "$base_dir/" -type d -name .gem -print0 | \
-    xargs -0 rm -rf
+  find "$base_dir/" -type d -name .gem -print0 | xargs -0 rm -rf
+  find "$base_dir/usr/src" ! -path "$base_dir/usr/src" > /dev/null \
+    -delete || true
 
   rm -rf "$base_dir/var/cache/apk/"*
   rm -rf "$base_dir/var/lib/apt/lists/"*
@@ -78,7 +79,6 @@ cleanup() {
   rm -rf "$base_dir/run/resolvconf"
   rm -rf "$base_dir/run/shm"
 
-  find "$base_dir/usr/src" ! -path "$base_dir/usr/src" -delete
   find "$base_dir/tmp" ! -path "$base_dir/tmp" \
     ! -iname bats.\*.src -delete
 }
