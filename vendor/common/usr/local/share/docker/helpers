@@ -78,6 +78,7 @@ cleanup() {
   rm -rf "$base_dir/run/resolvconf"
   rm -rf "$base_dir/run/shm"
 
+  find "$base_dir/usr/src" ! -path "$base_dir/usr/src" -delete
   find "$base_dir/tmp" ! -path "$base_dir/tmp" \
     ! -iname bats.\*.src -delete
 }
