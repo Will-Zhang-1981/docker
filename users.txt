@@ -21,3 +21,4 @@ discourse:620
 jekyll:621
 prosody:622
 minidlna:633
+ghost:634

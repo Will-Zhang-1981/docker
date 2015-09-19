@@ -1,0 +1,4 @@
+#!/bin/sh
+
+exec chpst -u ghost:ghost \
+  ghost
