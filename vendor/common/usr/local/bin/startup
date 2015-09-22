@@ -33,6 +33,11 @@ trap '{
   shutdown_d
   stop_d 2
   stop_d 3
+
+  if [ "$wait_pid" ] && kill -0 $wait_pid
+    then kill $wait_pid
+  fi
+  
   trap - EXIT
   exit $status
 }' EXIT QUIT TERM INT
@@ -47,9 +52,11 @@ if [ "$user_context" ]; then
   "$@"
   exit $?
 else
-  if [ -x /usr/bin/default ] || [ -x /usr/local/bin/default ]; then exec default
-  else
-    wait $wait_pid
-    exit 0
+  if [ -x /usr/bin/default ] || [ -x /usr/local/bin/default ]; then
+    default &
+    wait_pid=$!
   fi
+
+  wait $wait_pid
+  exit 0
 fi
