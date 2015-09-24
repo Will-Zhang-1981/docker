@@ -35,9 +35,9 @@ trap '{
   stop_d 3
 
   if [ "$wait_pid" ] && kill -0 $wait_pid
-    then kill $wait_pid
+    then kill $wait_pid || true
   fi
-  
+
   trap - EXIT
   exit $status
 }' EXIT QUIT TERM INT
