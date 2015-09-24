@@ -1,0 +1,4 @@
+#!/bin/sh
+
+timeout --preserve-status 12 psql -h ${PG_HOSTNAME} -U ${PG_USERNAME} -d ${PG_DATABASE} \
+  -f /usr/share/dovefix/db.sql || true

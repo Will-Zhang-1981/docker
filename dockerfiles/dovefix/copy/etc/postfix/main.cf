@@ -1,0 +1,68 @@
+myorigin = /etc/mailname
+myhostname = __HOSTNAME__
+
+biff = no
+relayhost =
+readme_directory = no
+recipient_delimiter = +
+append_dot_mydomain = no
+mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+alias_maps = hash:/etc/aliases
+disable_vrfy_command = yes
+mailbox_size_limit = 0
+inet_interfaces = all
+inet_protocols = ipv4
+
+mydestination = localhost
+relay_domains = proxy:pgsql:/etc/postfix/pgsql/relay_domains.sql
+local_recipient_maps = $alias_maps $virtual_mailbox_maps
+local_transport = virtual
+
+virtual_transport = lmtp:unix:private/dlmtp
+virtual_alias_maps = proxy:pgsql:/etc/postfix/pgsql/alias_maps.sql
+virtual_mailbox_domains = proxy:pgsql:/etc/postfix/pgsql/mailbox_domains.sql
+virtual_mailbox_maps = proxy:pgsql:/etc/postfix/pgsql/mailbox_maps.sql
+virtual_uid_maps = static:501
+virtual_gid_maps = static:501
+
+smtpd_tls_protocols = !SSLv2, !SSLv3
+smtpd_tls_cert_file=/var/ssl/__HOSTNAME__.crt
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtpd_tls_key_file=/var/ssl/__HOSTNAME__.key
+smtpd_tls_security_level=may
+smtpd_use_tls = yes
+
+smtpd_helo_required = yes
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = unix:private/auth
+smtpd_sasl_security_options = noanonymous
+smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu/GNU)
+smtpd_sender_login_maps = proxy:pgsql:/etc/postfix/pgsql/sender_maps.sql
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+smtpd_milters = unix:opendkim/milter.sock
+smtp_tls_protocols = !SSLv2, !SSLv3
+smtpd_delay_reject = yes
+
+smtpd_relay_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination
+smtpd_recipient_restrictions = permit_mynetworks, reject_sender_login_mismatch, permit_sasl_authenticated,
+  reject_non_fqdn_recipient, reject_unauth_destination, check_policy_service unix:postgrey/milter.sock
+
+milter_default_action = accept
+non_smtpd_milters = unix:opendkim/milter.sock
+milter_protocol = 6
+
+# mua_sender_restrictions=
+# mua_helo_restrictions=
+# mua_client_restrictions=
+
+postscreen_bare_newline_enable = yes
+postscreen_non_smtp_command_enable = yes
+postscreen_greet_banner = Wait your turn
+postscreen_disable_vrfy_command = yes
+postscreen_pipelining_enable = yes
+
+postscreen_pipelining_action = enforce
+postscreen_non_smtp_command_action = enforce
+postscreen_bare_newline_action = enforce
+postscreen_greet_action = enforce

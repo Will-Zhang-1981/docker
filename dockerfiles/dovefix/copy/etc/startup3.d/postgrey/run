@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+chpst -u postgrey:postfix \
+  postgrey --pidfile=/var/run/postgrey.pid \
+    --group=postfix --unix=/var/spool/postfix/postgrey/milter.sock \
+      --greylist-text="Temporary; resend if != spammer." &
+pid=$!
+
+printf '%s \n' $pid > /etc/startup3.d/postgrey/supervise/daemon
+while [ ! -e /var/spool/postfix/postgrey/milter.sock ]; do
+  sleep 1
+done
+
+chown postfix.postgrey /var/spool/postfix/postgrey/milter.sock
+chmod ug+rwx /var/spool/postfix/postgrey/milter.sock
+wait $pid
