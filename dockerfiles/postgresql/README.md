@@ -28,9 +28,3 @@ and even use Docker to create snapshots.
 docker exec -it postgresql sudo -u postgres createdb --owner=user db
 docker exec -it postgresql sudo -u postgres createuser --interactive user
 ```
-
-## Securing PostgreSQL
-
-By default this image has `0.0.0.0 md5` which is pretty insecure, I recommend
-you `docker cp` `/etc/postgresql/pg_hba.conf` and grant per db, per user perm
-but if you don't want to do that I understand.
