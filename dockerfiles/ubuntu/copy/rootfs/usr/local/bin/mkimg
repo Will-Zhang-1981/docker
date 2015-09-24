@@ -18,12 +18,9 @@ gpg --verify SHA256SUMS.gpg SHA256SUMS
 img=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $2 }' | sed -r 's/^\*//')
 sha=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $1 }')
 
-if [ "$(sha256sum $CACHE_DIR/ubuntu-core.tar.gz | awk '{ print $1 }')" = "$sha" ]; then
-	cp $CACHE_DIR/ubuntu-core.tar.gz $img
-else
-	echo "Updating cached Ubuntu."
-	wget -nv "$partner_url/$release/current/$img"
-	cp $img $CACHE_DIR/ubuntu-core.tar.gz
+wget -nv "$partner_url/$release/current/$img"
+if [ "$(sha256sum $img | awk '{ print $1 }')" != "$sha" ]; then
+	echo "Bailing, the SHA256sum did not match."
 fi
 
 tar xzf $img -C $rootfs
