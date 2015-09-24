@@ -6,7 +6,7 @@ set -e
 # @output 0
 
 operating_system() {
-  echo "$(bash -c 'source /etc/os-release; echo $ID')"
+  echo "$(sh -c 'source /etc/os-release; echo $ID')"
 }
 
 # Cleans up common files we don't want hanging around on the image.

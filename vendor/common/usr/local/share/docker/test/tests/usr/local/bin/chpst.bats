@@ -4,5 +4,5 @@
     which chpst)
 
   [ ! -z "$bin" ] || pending "No chpst."
-  assert_eq "$(chpst -u bin bash -c 'echo $HOME')" "/bin"
+  assert_eq "$(chpst -u bin sh -c 'echo $HOME')" "/bin"
 }

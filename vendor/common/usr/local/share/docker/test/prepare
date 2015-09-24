@@ -6,7 +6,7 @@ set -e
 if which apk > /dev/null; then
   apk --no-progress --update add git ruby ruby-dev \
     ruby-json ruby-rdoc ruby-irb ruby-io-console \
-      build-base
+      build-base bash
 else
   apt-get update
   apt-get install --no-install-recommends -y ruby \

@@ -78,7 +78,7 @@ teardown() {
     --system --gid 601 --uid 601 test1
 
   reset_users test1:701
-  run bash -c "getent passwd test1 | awk -F: '{ print \$3 }'"
+  run sh -c "getent passwd test1 | awk -F: '{ print \$3 }'"
   assert_eq "$output" 701
 }
 
@@ -88,8 +88,8 @@ teardown() {
     --system --gid 601 --uid 601 test1
 
   reset_users test1:701
-  result1=$(bash -c "getent  group test1 | awk -F: '{ print \$3 }'")
-  result2=$(bash -c "getent passwd test1 | awk -F: '{ print \$4 }'")
+  result1="$(getent  group test1 | awk -F: '{ print $3 }')"
+  result2="$(getent passwd test1 | awk -F: '{ print $4 }')"
   assert_eq "$result1" 701
   assert_eq "$result2" 701
 }
@@ -101,7 +101,7 @@ teardown() {
     --system --system --gid 602 --uid 601 test1
 
   reset_users test1:701
-  run bash -c "getent passwd test1 | awk -F: '{ print \$4 }'"
+  run sh -c "getent passwd test1 | awk -F: '{ print \$4 }'"
   assert_eq "$output" 602
 }
 

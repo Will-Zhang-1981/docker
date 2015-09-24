@@ -48,7 +48,7 @@ These services are started with runit so you should do something like
 A basic `/etc/startup3.d/<service>/run`
 
 ```shell
-#!/bin/bash
+#!/bin/sh
 exec binary
 ```
 
