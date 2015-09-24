@@ -1,5 +1,8 @@
 # Dovefix Docker Image
 
+* [![](https://badge.imagelayers.io/envygeeks/dovefix:latest.svg)][latest] `latest`
+[latest]:   https://imagelayers.io?images=envygeeks/dovefix:latest
+
 The Dovefix Docker image has postfix (w/ postscreen), dovecot, opendkim, and
 postgrey.  By default it assumes you aren't an ass and you want to use SSL so if
 you do not volume an SSL folder with an SSL named after your hostname it will

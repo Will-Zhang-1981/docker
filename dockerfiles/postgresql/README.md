@@ -1,5 +1,8 @@
 # PostgreSQL Docker Image
 
+* [![](https://badge.imagelayers.io/envygeeks/postgresql:latest.svg)][latest] `latest`
+[latest]:   https://imagelayers.io?images=envygeeks/postgresql:latest
+
 The EnvyGeeks PostgreSQL docker image is a simple docker image that assumes
 you want to get shit done rather than fight with horse shit, and it doesn't make
 an ass of itself by assuming you don't know how to work PostgreSQL.

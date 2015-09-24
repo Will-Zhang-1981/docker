@@ -1,6 +1,7 @@
 # Nginx Docker Image
 
-An Alpine based Nginx image.
+* [![](https://badge.imagelayers.io/envygeeks/nginx:latest.svg)][latest] `latest`
+[latest]:   https://imagelayers.io?images=envygeeks/nginx:latest
 
 ## Notes
 
