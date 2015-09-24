@@ -3,9 +3,6 @@
 * [![](https://badge.imagelayers.io/envygeeks/prosody:latest.svg)][latest] `latest`
 [latest]:   https://imagelayers.io?images=envygeeks/prosody:latest
 
-The Prosody Docker image has Prosody and is simple.  It supports lua-event,
-postgresql (for user persist) and SSL (by default.)
-
 ## Environment variables
 
 * `HOSTNAME`
