@@ -92,6 +92,7 @@ RUN \
   } && \
 
   npm install pg mysql --save && \
-  apk del git sqlite-dev python build-base openssl-dev zlib-dev libuv-dev linux-headers && \
+  apk del git sqlite-dev python build-base openssl-dev zlib-dev libuv-dev \
+    linux-headers wget && \
   docker-helper cleanup
 VOLUME /srv/ghost
