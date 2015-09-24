@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-if [[ -f /run/minidlna/minidlna.pid ]]; then
+if [ -f /run/minidlna/minidlna.pid ]; then
   kill "$(
     cat /run/minidlna/minidlna.pid
   )"

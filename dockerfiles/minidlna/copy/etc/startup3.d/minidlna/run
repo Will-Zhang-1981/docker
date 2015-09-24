@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 exec 2>&1
 set -e
 
@@ -6,6 +6,6 @@ touch /run/minidlna/minidlna.pid && chown minidlna:minidlna /run/minidlna/minidl
 chpst -u minidlna:minidlna minidlnad -f /etc/minidlna.conf \
   -P /run/minidlna/minidlna.pid &
 
-while [[ -f /run/minidlna/minidlna.pid ]]; do
+while [ -f /run/minidlna/minidlna.pid ]; do
   sleep 1
 done
