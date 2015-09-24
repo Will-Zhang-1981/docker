@@ -25,6 +25,8 @@ that's bad for memory and bad for development.  We scale our PostgreSQL
 and even use Docker to create snapshots.
 
 ```shell
-docker exec -it postgresql sudo -u postgres createdb --owner=user db
-docker exec -it postgresql sudo -u postgres createuser --interactive user
+docker exec -it postgresql chpst -u postgres createuser --interactive user
+docker exec -it postgresql chpst -u postgres createdb   --owner=user  db
+docker exec -it postgresql chpst -u postgres psql -c \
+  "ALTER USER user WITH password 'password'"
 ```
