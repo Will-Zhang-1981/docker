@@ -8,6 +8,7 @@
 * [![](https://badge.imagelayers.io/envygeeks/alpine:python.svg)][python] `python`
 * [![](https://badge.imagelayers.io/envygeeks/alpine:ruby.svg)][ruby] `ruby`
 * [![](https://badge.imagelayers.io/envygeeks/alpine:iojs.svg)][iojs] `iojs`
+* [![](https://badge.imagelayers.io/envygeeks/alpine:bash.svg)][bash] `bash`
 
 [ruby]:   https://imagelayers.io?images=envygeeks/alpine:ruby
 [tiny]:   https://imagelayers.io?images=envygeeks/alpine:tiny
@@ -15,6 +16,7 @@
 [python]: https://imagelayers.io?images=envygeeks/alpine:python
 [dev]:    https://imagelayers.io?images=envygeeks/alpine:dev
 [iojs]:   https://imagelayers.io?images=envygeeks/alpine:iojs
+[bash]:   https://imagelayers.io?images=envygeeks/alpine:bash
 
 ## Differences between "official" and this image.
 

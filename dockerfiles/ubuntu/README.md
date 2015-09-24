@@ -8,6 +8,7 @@
 * [![](https://badge.imagelayers.io/envygeeks/ubuntu:python.svg)][python] `python`
 * [![](https://badge.imagelayers.io/envygeeks/ubuntu:ruby.svg)][ruby] `ruby`
 * [![](https://badge.imagelayers.io/envygeeks/ubuntu:iojs.svg)][iojs] `iojs`
+* [![](https://badge.imagelayers.io/envygeeks/ubuntu:bash.svg)][bash] `bash`
 
 [ruby]:   https://imagelayers.io?images=envygeeks/ubuntu:ruby
 [tiny]:   https://imagelayers.io?images=envygeeks/ubuntu:tiny
@@ -15,6 +16,7 @@
 [python]: https://imagelayers.io?images=envygeeks/ubuntu:python
 [dev]:    https://imagelayers.io?images=envygeeks/ubuntu:dev
 [iojs]:   https://imagelayers.io?images=envygeeks/ubuntu:iojs
+[bash]:   https://imagelayers.io?images=envygeeks/ubuntu:bash
 
 ## Differences between "official" and this image.
 
