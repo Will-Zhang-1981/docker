@@ -1,7 +1,11 @@
 #!/bin/sh
 set -e
-for v in $(cat /run/stdout/tail.pids); do
-  kill "$v"
-done
-rm -rf \
-/run/stdout
+pid_file=/etc/startup2.d/stdout/supervise/daemons
+if [ -f $pid_file ]; then
+  for v in $(cat $pid_file); do
+    kill $v
+  done
+
+  rm -rf \
+    $pid_file
+fi
