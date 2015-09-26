@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if [ -f /run/minidlna/minidlna.pid ]; then
-  kill "$(
-    cat /run/minidlna/minidlna.pid
-  )"
+pid=/var/run/minidlna/minidlna.pid
+if [ -f $pid ]; then
+  kill "$(cat $pid)"
+  rm -rf $pid
 fi

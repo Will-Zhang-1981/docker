@@ -1,11 +1,10 @@
 #!/bin/sh
 exec 2>&1
 set -e
-
-touch /run/minidlna/minidlna.pid && chown minidlna:minidlna /run/minidlna/minidlna.pid
-chpst -u minidlna:minidlna minidlnad -f /etc/minidlna.conf \
-  -P /run/minidlna/minidlna.pid &
-
-while [ -f /run/minidlna/minidlna.pid ]; do
-  sleep 1
+pid=/run/minidlna/minidlna.pid
+touch $pid && chown minidlna:minidlna $pid
+chpst -u minidlna:minidlna minidlnad -f /etc/minidlna.conf
+# Our buffer limits are 60-120s, boot after 1 is instant.
+while [ -f $pid_file ]; do
+  sleep 60
 done
