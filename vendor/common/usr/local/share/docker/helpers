@@ -27,7 +27,7 @@ cleanup() {
   find "$base_dir/usr/src" ! -path "$base_dir/usr/src" 2> /dev/null \
     -delete || true
 
-  rm -rf "$base_dir/var/cache/apt/archives/"*
+  rm -rf "$base_dir/var/cache/apt/"*
   rm -rf "$base_dir/var/cache/apk/"*
   rm -rf "$base_dir/var/lib/apt/lists/"*
   rm -rf "$base_dir/opt/jekyll/lib/ruby/gems/"*/cache/*
