@@ -2,4 +2,4 @@
 /tmp
 tmp.*/
 vendor/bundle
-compose.yml
+compose/
