@@ -29,6 +29,8 @@ rm -rf $rootfs/etc/hosts
 rm -rf $rootfs/etc/resolv.conf
 cp /etc/resolv.conf $rootfs/etc/resolv.conf
 cp /etc/hosts $rootfs/etc/hosts
+cp $OPTIONS_DIR/remove \
+	$rootfs/tmp/remove
 
 chroot "$rootfs" sh -ec "{
 	dpkg-divert --local --rename --add /sbin/initctl
@@ -43,13 +45,17 @@ chroot "$rootfs" sh -ec "{
 
 	apt-get update
 	apt-get dist-upgrade -yf
-	apt-get install --no-install-recommends -yf locales deborphan
+	apt-get install --no-install-recommends -yf \
+		locales deborphan
+
+	apt-get autoremove --purge \$(cat /tmp/remove) -yf
 	apt-get autoremove --purge \$(deborphan --guess-all) deborphan -yf
 	apt-get autoclean
 	apt-get clean
 
 	rm -rf /sbin/initctl
 	dpkg-divert --local --rename --remove /sbin/initctl
+	rm -rf /tmp/remove
 }"
 
 cp -R $COMMON_DIR/* $rootfs
@@ -74,7 +80,7 @@ for v in "$OPTIONS_DIR/pkgs/all" "$OPTIONS_DIR/pkgs/$TYPE" "$OPTIONS_DIR/pkgs/$T
 		chroot $rootfs sh -ec "{
 			dpkg-divert --local --rename --add /sbin/initctl
 			ln -s /bin/true /sbin/initctl
-			
+
 			apt-get install --no-install-recommends -yf \$(cat /tmp/pkgs)
 			rm -rf /tmp/pkgs /sbin/initctl
 			dpkg-divert --local --rename \\
