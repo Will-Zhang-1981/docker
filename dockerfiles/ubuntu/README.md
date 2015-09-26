@@ -9,6 +9,7 @@
 * [![](https://badge.imagelayers.io/envygeeks/ubuntu:ruby.svg)][ruby] `ruby`
 * [![](https://badge.imagelayers.io/envygeeks/ubuntu:iojs.svg)][iojs] `iojs`
 * [![](https://badge.imagelayers.io/envygeeks/ubuntu:bash.svg)][bash] `bash`
+* [![](https://badge.imagelayers.io/envygeeks/ubuntu:lts.svg)][lts] `lts`
 
 [ruby]:   https://imagelayers.io?images=envygeeks/ubuntu:ruby
 [tiny]:   https://imagelayers.io?images=envygeeks/ubuntu:tiny
@@ -17,6 +18,7 @@
 [dev]:    https://imagelayers.io?images=envygeeks/ubuntu:dev
 [iojs]:   https://imagelayers.io?images=envygeeks/ubuntu:iojs
 [bash]:   https://imagelayers.io?images=envygeeks/ubuntu:bash
+[lts]:    https://imagelayers.io?images=envygeeks/ubuntu:lts
 
 ## Differences between "official" and this image.
 
