@@ -27,10 +27,9 @@ cd -> /dev/null
 
 rm -rf $rootfs/etc/hosts
 rm -rf $rootfs/etc/resolv.conf
+cp $OPTIONS_DIR/remove $rootfs/tmp/remove
 cp /etc/resolv.conf $rootfs/etc/resolv.conf
 cp /etc/hosts $rootfs/etc/hosts
-cp $OPTIONS_DIR/remove \
-	$rootfs/tmp/remove
 
 chroot "$rootfs" sh -ec "{
 	dpkg-divert --local --rename --add /sbin/initctl
