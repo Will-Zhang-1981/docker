@@ -32,7 +32,7 @@ cp /etc/hosts $rootfs/etc/hosts
 
 chroot "$rootfs" sh -ec "{
 	dpkg-divert --local --rename --add /sbin/initctl
-	ln -s /sbin/true /sbin/initctl
+	ln -s /bin/true /sbin/initctl
 
 	sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
 	echo \"debconf debconf/frontend select Noninteractive\" | debconf-set-selections
@@ -72,8 +72,13 @@ for v in "$OPTIONS_DIR/pkgs/all" "$OPTIONS_DIR/pkgs/$TYPE" "$OPTIONS_DIR/pkgs/$T
 	if [ -f "$v" ]; then
 		cp $v $rootfs/tmp/pkgs
 		chroot $rootfs sh -ec "{
+			dpkg-divert --local --rename --add /sbin/initctl
+			ln -s /bin/true /sbin/initctl
+			
 			apt-get install --no-install-recommends -yf \$(cat /tmp/pkgs)
-			rm -rf /tmp/pkgs
+			rm -rf /tmp/pkgs /sbin/initctl
+			dpkg-divert --local --rename \\
+				--remove /sbin/initctl
 		}"
 	fi
 done
