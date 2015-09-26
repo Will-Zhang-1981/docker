@@ -17,24 +17,27 @@ fi
 
 case $to in
   compose)
-    file=
-    for file in /etc/docker/compose.yml /srv/docker/compose.yml \
-        "$DOCKER_RECIPES/compose.yml" compose.yml; do
-      [ -f "$file" ] && break || file=;
+    no_file=
+    for v in "$@"; do
+      if [ "$v" = "-f" ]; then
+        no_file=true
+      fi
     done
 
-    if [ "$file" ]; then
-      set -- $file "$@"
-      set --  "-f" "$@"
+    if [ -z "$no_file" ]; then
+      file=
+      for file in /etc/docker/compose.yml /srv/docker/compose.yml \
+          "$DOCKER_RECIPES/compose.yml" compose.yml; do
+        [ -f "$file" ] && break || file=;
+      done
+
+      if [ "$file" ]; then
+        set -- $file "$@"
+        set --  "-f" "$@"
+      fi
     fi
 
-    if [ "$3" = "restart" ]; then
-      for v in "stop -t 60" "rm -f" "up -d"; do
-        echo $v | xargs -n1 | xargs $compose -f $file
-      done
-    else
-      $compose "$@"
-    fi
+    $compose "$@"
   ;;
 
   clean)

@@ -39,6 +39,11 @@ trap '{
   fi
 
   trap - EXIT
+  #    128+2=INT              128+3=QUIT             128+15=TERM
+  if [ $status -eq 130 ] || [ $status -eq 131 ] || [ $status -eq 143 ]; then
+    status=0
+  fi
+
   exit $status
 }' EXIT QUIT TERM INT
 
