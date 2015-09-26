@@ -4,21 +4,20 @@ set -e
 
 arch=$(uname -i)
 rootfs=$(mktemp -d)
-release=$(cat $OPTIONS_DIR/release)
 partner_url="https://partner-images.canonical.com/core"
 dpkg_arch=$(dpkg --print-architecture)
 tmp=$(mktemp -d)
 
 cd $tmp
 gpg  --keyserver keyserver.ubuntu.com --recv-keys 7db87c81
-wget -nv $partner_url/$release/current/SHA256SUMS.gpg
-wget -nv $partner_url/$release/current/SHA256SUMS
+wget -nv $partner_url/$RELEASE/current/SHA256SUMS.gpg
+wget -nv $partner_url/$RELEASE/current/SHA256SUMS
 gpg --verify SHA256SUMS.gpg SHA256SUMS
 
 img=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $2 }' | sed -r 's/^\*//')
 sha=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $1 }')
 
-wget -nv "$partner_url/$release/current/$img"
+wget -nv "$partner_url/$RELEASE/current/$img"
 if [ "$(sha256sum $img | awk '{ print $1 }')" != "$sha" ]; then
 	echo "Bailing, the SHA256sum did not match."
 fi
@@ -32,6 +31,9 @@ cp /etc/resolv.conf $rootfs/etc/resolv.conf
 cp /etc/hosts $rootfs/etc/hosts
 
 chroot "$rootfs" sh -ec "{
+	dpkg-divert --local --rename --add /sbin/initctl
+	ln -s /sbin/true /sbin/initctl
+
 	sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
 	echo \"debconf debconf/frontend select Noninteractive\" | debconf-set-selections
 	echo 'Dpkg::Options { \"--force-confdef\"; \"--force-confold\"; }' > /etc/apt/apt.conf.d/local
@@ -45,6 +47,9 @@ chroot "$rootfs" sh -ec "{
 	apt-get autoremove --purge \$(deborphan --guess-all) deborphan -yf
 	apt-get autoclean
 	apt-get clean
+
+	rm -rf /sbin/initctl
+	dpkg-divert --local --rename --remove /sbin/initctl
 }"
 
 cp -R $COMMON_DIR/* $rootfs

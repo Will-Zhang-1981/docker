@@ -4,9 +4,8 @@ set -e
 
 arch=$(uname -i)
 rootfs=$(mktemp -d)
-release=$(cat $OPTIONS_DIR/release)
-testing_url="http://nl.alpinelinux.org/alpine/$release/testing"
-release_url="http://nl.alpinelinux.org/alpine/$release/main"
+testing_url="http://nl.alpinelinux.org/alpine/$RELEASE/testing"
+release_url="http://nl.alpinelinux.org/alpine/$RELEASE/main"
 tmp=$(mktemp -d)
 
 for v in $(cat $OPTIONS_DIR/apks); do

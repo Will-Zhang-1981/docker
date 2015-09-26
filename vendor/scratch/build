@@ -22,6 +22,24 @@ rel() {
   echo $1 | sed -r "s|^/tmp/||"
 }
 
+get_release() {
+  if [ -d options/releases ]; then
+    if [ -f options/releases/$tag ]; then
+      release=$(
+        cat options/releases/$tag
+      )
+    elif [ -f options/releases/$type ]; then
+      release=$(
+        cat options/releases/$type
+      )
+    elif [ -f options/releases/all ]; then
+      release=$(
+        cat options/releases/all
+      )
+    fi
+  fi
+}
+
 _trap() {
   status=$?
   trap - EXIT
@@ -58,6 +76,7 @@ rootfs_dockerfile=$(rel $tmpdir)/$(rel "$(mktemp -u)")
   # archive: The tar.gz file you write to.
   # copy_type: copy/$type folder
   # copy_tag: copy/$tag folder
+  # release: releases/* file
   # cache: cache/ folder.
 
   options_dir=$(mktemp --tmpdir=$tmpdir -u)
@@ -80,6 +99,7 @@ tput clear || true
 for img in $(cat options/tags); do
    type=$(echo $img  | awk -F/ '{ print $2 }')
     tag=$(echo $img  | awk -F/ '{ print $1 }')
+    get_release
 
   if [ "$build" ] && [ "$tag" != "$build" ]; then
     continue
@@ -114,6 +134,7 @@ for img in $(cat options/tags); do
     \
     --env="REPO=$repo" \
     --env="TYPE=$type" \
+    --env="RELEASE=$release" \
     --env="USER=$user" \
     --env="TAG=$tag" \
     -it rootfs:$repo

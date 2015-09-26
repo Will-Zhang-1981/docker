@@ -20,6 +20,7 @@ Examples of each type:
 * dockerfiles/alpine: scratch
 * dockerfiles/jekyll: templated
 * dockerfiles/ubuntu: scratch
+* dockerfiles/\*: normal
 
 ## Repo types
 
@@ -120,6 +121,7 @@ The following variables are meant to be used in
 * `$COPY_TYPE_DIR`: The `copy/*` directory for the tag type.
 * `$COPY_REPO_DIR`: The `copy/*` directory for the repo.
 * `$COPY_TAG_DIR`: The `copy/*` directory for the tag.
+* `RELEASE`: The release you set in releases/$tag|$type|all.
 * `USER`: The user it's being built on.
 * `REPO`: The repo name.
 * `TYPE`: The tag type.
