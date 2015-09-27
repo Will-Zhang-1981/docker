@@ -3,5 +3,4 @@
 pid=/var/run/minidlna/minidlna.pid
 if [ -f $pid ]; then
   kill "$(cat $pid)"
-  rm -rf $pid
 fi
