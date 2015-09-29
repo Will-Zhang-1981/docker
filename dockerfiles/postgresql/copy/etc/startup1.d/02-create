@@ -1,14 +1,14 @@
 #!/bin/sh
-set -e
-
+set -ex
+port=5434
 if [ -f /usr/share/postgresql/default/users ]; then
-  chpst -u postgres postgres -D /srv/postgresql -c 'port=5434' 1>/dev/null 2>&1 &
+  chpst -u postgres postgres -D /srv/postgresql -c "port=$port" 1>/dev/null 2>&1 &
   pid=$!
 
   count=0; started=
   while [ "$count" -lt 12 ]; do
     count=$(echo "$(($count+1))")
-    chpst -u postgres:postgres psql --port=5434 -d postgres -c '\l' \
+    chpst -u postgres:postgres psql --port=$port -d postgres -c '\l' \
         1>/dev/null 2>&1 && {
       started=true
       break
@@ -29,14 +29,19 @@ if [ -f /usr/share/postgresql/default/users ]; then
       data=$(echo $v | awk -F: '{ print $3 }')
 
       if [ "$pass" ]; then
-        chpst -u postgres:postgres createuser --port=5434 --no-superuser --no-createdb --echo $user
-        chpst -u postgres:postgres psql       --port=5434 -c \
+        if ! chpst -u postgres:postgres psql --port=$port -tAc \
+            "SELECT 1 FROM pg_roles WHERE rolname='$user'" | grep -q 1;
+          then chpst -u postgres:postgres createuser --port=$port \
+            --no-superuser --no-createdb --echo $user
+        fi
+
+        chpst -u postgres:postgres psql --port=$port -c \
           "ALTER USER $user WITH PASSWORD '$pass';" >/dev/null
       fi
 
       chpst -u postgres:postgres createdb \
-        --port=5434 --owner=$user \
-          $data
+        --port=$port --owner=$user \
+          $data || true
     done
 
     kill $pid
