@@ -17,9 +17,10 @@ fi
 
 case $to in
   compose)
-    no_file=
+    no_file=; in_compose=true
     for v in "$@"; do
-      if [ "$v" = "-f" ]; then
+      if ! echo "$v" | grep -qE "^\-"; then in_compose=; fi
+      if [ "$v" = "-f" ] && [ "$in_compose" ]; then
         no_file=true
       fi
     done
