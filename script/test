@@ -5,9 +5,9 @@
 # images (even if others have it) is because we are are only testing
 # the helpers and not the images themselves (for now.)
 
-user=${DOCKER_USER:-envygeeks}
-root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
 [ "$DEBUG" ] && set -x
+root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
+. $root/vendor/script/helpers
 set -e
 
 if [ $# -eq 1 ] && [ -d "dockerfiles/$1" ]; then

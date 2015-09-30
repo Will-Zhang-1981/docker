@@ -3,9 +3,9 @@
 # Pulls down images from hub.docker.com since some images are built on
 # Travis-CI and pushed directly to hub.docker.com without us.
 
-user=${DOCKER_USER:-envygeeks}
-root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
 [ "$DEBUG" ] && set -x
+root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
+. $root/vendor/script/helpers
 set -e
 
 pull() {
@@ -16,35 +16,14 @@ pull() {
   fi
 }
 
-set_repo() {
-  if [ -f options/repo ]; then
-    repo=$(
-      cat options/repo
-    )
-  fi
-}
-
-set_user() {
-  if [ -f options/user ]; then
-    user=$(
-      cat options/user
-    )
-  fi
-}
-
 cd $root
 if [ $# -eq 1 ]; then
-  repo=$(echo $1 | awk -F: '{ print $1 }')
-   tag=$(echo $1 | awk -F: '{ print $2 }')
-
+  parse_repository "$1"
   if [ -d "dockerfiles/$repo" ]; then cd "dockerfiles/$repo"
-    set_repo
-    set_user
-
     if [ -x script/pull ]; then script/pull $tag
     elif [ -f options/tags ] && [ "$tag" ]; then
       if grep -qE "^$tag/" options/tags; then
-        pull $user/$repo:$tag
+        pull $current_user/$repo:$tag
       else
         >&2 printf "Unable to find the tag %s\n" "$tag"
         exit 1
@@ -52,14 +31,14 @@ if [ $# -eq 1 ]; then
 
     elif [ -f options/tags ]; then
       for v in $(cat options/tags); do
-        pull "$user/$repo:$(echo $v | awk -F/ '{
+        pull "$current_user/$repo:$(echo $v | awk -F/ '{
           print $1
         }')"
       done
 
     elif [ -d tags ] && [ "$tag" ]; then
       if [ -d "tags/$tag" ]; then
-        pull "$user/$repo:$tag"
+        pull "$current_user/$repo:$tag"
       else
         >&2 printf "Unknown tag '%s'" $tag
         exit 1
@@ -67,14 +46,13 @@ if [ $# -eq 1 ]; then
 
     elif [ -d tags ]; then
       for v in tags/*; do
-        pull "$user/$repo:$(
+        pull "$current_user/$repo:$(
           basename $v
         )"
       done
 
     else
-      tag=${tag:-latest}
-      pull "$user/$repo:$tag"
+      pull "$current_user/$repo:${tag:-latest}"
     fi
   else
     >&2 echo "Unknown repository"

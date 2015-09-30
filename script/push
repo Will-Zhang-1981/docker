@@ -1,18 +1,17 @@
 #!/bin/sh
 
-# Pushes an image that was manually built up to hub.docker.com, this is
-# mostly used for things like ubuntu and alpine not automated builds.
+# Provides a means to push both manually-built images and automatic images that
+# are triggered after a CI build with the following syntax:
+#
+# * script/push by-trigger
+# * script/push user/repo:tag
+# * script/push repo:tag
+# * script/push repo
 
-user=${DOCKER_USER:-envygeeks}
-root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
 [ "$DEBUG" ] && set -x
+root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
+. $root/vendor/script/helpers
 set -e
-
-images_with_tags() {
-  for tag in $(docker images | grep -E "^$user/$1" | awk '{ print $2 }' | sort -u); do
-    printf "%s/%s:%s\n" "$user" "$1" "$tag"
-  done
-}
 
 push() {
   for i in 1 2 3; do
@@ -26,23 +25,7 @@ push() {
   done
 }
 
-set_repo() {
-  if [ -f options/repo ]; then
-    repo=$(
-      cat options/repo
-    )
-  fi
-}
-
-set_user() {
-  if [ -f options/user ]; then
-    user=$(
-      cat options/user
-    )
-  fi
-}
-
-if [ "$CI" ]; then
+if [ "$CI" ] && [ -z "$SKIP_LOGIN" ]; then
   docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" \
     -p="$DOCKER_PASSWORD" > /dev/null 2>&1 <&- || {
       >&2 echo "Unable to login."
@@ -51,33 +34,55 @@ if [ "$CI" ]; then
 fi
 
 if [ $# -eq 1 ]; then
-  repo=$(echo $1 | awk -F: '{ print $1 }')
-   tag=$(echo $1 | awk -F: '{ print $2 }')
+  if [ "$1" = "by-trigger" ]; then
+    if [ "$CI" ]; then
+      for v in dockerfiles/*; do
+        if [ -d $v ] && [ -f $v/trigger ]; then
+          cd $v && key=$(cat trigger); repo="$(basename "$(pwd)")"
+          curl -H "Content-Type: application/json" --data '{ "build": true }' -X POST \
+            https://registry.hub.docker.com/u/$user/$repo/trigger/$key/ 1> /dev/null 2>&1 || {
+              printf "There was an error pushing %s.\n" $repo
+              exit 1
+            }
 
-  if [ -d "dockerfiles/$repo" ]; then
-    cd dockerfiles/$repo
-    set_repo
-    set_user
-
-    if [ -x script/push ]; then script/push $tag
-    elif [ "$tag" ]; then
-      image=$user/$repo:$tag
-
-      if echo "$(images_with_tags)" | \
-          grep -qE "^$image\$"; then
-        push $image
-      else
-        >&2 printf "%s doesn't exist.\n" $url
-        exit 1
-      fi
-    else
-      for v in $(images_with_tags $1); do
-        push $v
+          printf "Triggered %s\n" \
+            $repo
+        fi
       done
+    else
+      echo "This feature is for CI's"
+      exit 1
     fi
   else
-    >&2 printf "Unknown repo %s" $repo
-    exit 1
+    parse_repository "$1"
+    if [ "$repo" ] && [ -d "dockerfiles/$repo" ]; then
+      cd dockerfiles/$repo
+
+      if [ -x script/push ]; then
+        script/push $tag
+
+      elif [ "$tag" ]; then
+        image=$current_user/$repo:$tag
+        if echo "$(images_with_tags)" | grep -qE "^$image\$"; then
+          push $image
+        else
+          >&2 printf "%s doesn't exist in a built state.\n" \
+            "$image"
+          exit 1
+        fi
+
+      elif [ -f auto ]; then
+        echo "Feature unavailable."
+
+      else
+        for v in $(available_images_with_tags $current_user $repo); do
+          push $v
+        done
+      fi
+    else
+      >&2 printf "Unknown repo %s" $repo
+      exit 1
+    fi
   fi
 elif [ $# -gt 1 ]; then
   for v in "$@"; do
@@ -85,8 +90,6 @@ elif [ $# -gt 1 ]; then
   done
 else
   for v in dockerfiles/*; do
-    $0 "$(
-      basename $v
-    )"
+    $0 "$(basename $v)"
   done
 fi

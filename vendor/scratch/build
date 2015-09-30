@@ -2,19 +2,24 @@
 
 set -e
 tmpdir=$(mktemp -d)
-user=${DOCKER_USER:-envygeeks}
 root=$(cd "$(dirname $0)/.."; pwd)
 parent_root=$(cd "$(dirname "$(readlink -f $0)")/../.."; pwd)
-repo=${DOCKER_REPO:-$(cat $root/options/repo)}
+repo="$(cd $root; basename "$(pwd)")"
 [ "$DEBUG" ] && set -x
 cd $root
 
 if [ $# -eq 1 ]; then
-  build=$1
+  user=$1
   shift
 
+elif [ $# -eq 2 ]; then
+  build=$2
+   user=$1
+
+  shift
+  shift
 elif [ $# -gt 0 ]; then
-  >&2 echo "Too many tags given, only one accepted."
+  >&2 echo "Too many tags given, only one..two accepted."
   exit 1
 fi
 
@@ -28,10 +33,12 @@ get_release() {
       release=$(
         cat options/releases/$tag
       )
+
     elif [ -f options/releases/$type ]; then
       release=$(
         cat options/releases/$type
       )
+
     elif [ -f options/releases/all ]; then
       release=$(
         cat options/releases/all

@@ -1,0 +1,37 @@
+#!/bin/sh
+default_user=envygeeks
+set_user() {
+  if [ "$DOCKER_USER" ]
+    then user=$DOCKER_USER; else user=$default_user
+  fi
+}
+
+# Takes the passed argv user/repo:tag and parses it to:
+# current_user: user part or $user
+# repo: the repo part
+# tag: tag part.
+
+set_user
+parse_repository() {
+  if echo "$1" | grep -q '/'; then
+    current_user=$(echo $1 | awk -F/ '{ print $1 }')
+    repo=$(echo "$1" | awk -F/ '{ print $2 }' | awk -F: '{ print $1 }')
+     tag=$(echo "$1" | awk -F/ '{ print $2 }' | awk -F: '{ print $2 }')
+  else
+    if [ -f options/user ];
+      then current_user=$(cat options/user); else current_user=$user
+    fi
+
+     tag=$(echo "$1" | awk -F: '{ print $2 }')
+    repo=$(echo "$1" | awk -F: '{ print $1 }')
+  fi
+}
+
+# Providing a user ($1) with a repo ($2) we will return all of the built tags so
+# that you can do as you please with it.
+
+available_images_with_tags() {
+  for v in $(docker images | grep -E "^$1/$2" | awk '{ print $2 }' | sort -u); do
+    printf "%s/%s:%s\n" "$1" "$2" "$v"
+  done
+}
