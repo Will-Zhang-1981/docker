@@ -1,38 +1,27 @@
 #!/bin/sh
-set -e
-mkdir -p /run/stdout
+set -ex
 pid_file=/etc/startup2.d/stdout/supervise/daemons
-tail_file=/etc/startup2.d/stdout/supervise/tails
 touch $pid_file
 pids=
 
 if [ -d /etc/stdout.d ] && [ "$(ls -A /etc/stdout.d)" ]; then
-  for f in /etc/stdout.d/*; do
-    if [ -f "$f" ]; then
-      printf "%s\n" "$f" > $tail_file
-    fi
-  done
+  for v in /etc/stdout.d/*; do
+    path=$(readlink $v)
+    mkdir -p "$(dirname $path)"
+    touch $path
 
-  while [ -f $tail_file ] && tails=$(cat $tail_file) && [ -n "$tails" ] && rm -rf $tail_file; do
-    for f in $tails; do
-      tail -qf "$f" 2>/dev/null &
-      pid=$!
-      if ! kill -0 $pid; then
-        printf "%s\n" "$f" > $tail_file
-      else
-        pids=$pids" $pid"
-        printf "%s\n" > $pid_file
-      fi
-    done
+    tail -qf "$v" &
+    pid=$!
 
-    if [ -f "$tail_file" ] && [ -n "$(cat $tail_file)" ]; then
-      sleep 1
-    fi
+    echo $pid > $pid_file
+    pids=$pids" $pid"
   done
 else
   touch /etc/stdout.d/empty
-  tail -qf /etc/stdout.d/empty
-  echo $! > $pid_file
+  tail -qf /etc/stdout.d/empty &
+  pid=$!
+
+  echo $pid > $pid_file
   pids=$pids" $pid"
 fi
 
