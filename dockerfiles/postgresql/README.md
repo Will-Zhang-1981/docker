@@ -34,7 +34,7 @@ docker exec -it postgresql chpst -u postgres psql -c \
   "ALTER USER user WITH password 'password'"
 ```
 
-# Creating users, databases.
+# Creating users, databases and extensions.
 
 To create a set of default users, passwords and databases or users/databases
 then create mount the volume (file) to `/usr/share/postgresql/default/users` and
@@ -43,4 +43,12 @@ if we detect it we will parse it with the following syntax:
 ```
 user:password:database
 user::database
+```
+
+To create extensions on databases create
+`/usr/share/postgresql/default/extensions` and in that file use the following
+syntax:
+
+```
+database:extension
 ```
