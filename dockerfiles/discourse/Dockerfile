@@ -67,7 +67,7 @@ RUN \
     libssl-dev build-essential libpq-dev ruby-dev make dpkg-dev gcc g++ \
       wget && \
 
-  apt-get autoremove --purge && \
+  apt-get autoremove --purge -y && \
   docker-helper enable_stdout_logger && \
   chown -R discourse:discourse /opt/discourse && \
   for f in production.log unicorn.stderr.log unicorn.stdout.log; do \
