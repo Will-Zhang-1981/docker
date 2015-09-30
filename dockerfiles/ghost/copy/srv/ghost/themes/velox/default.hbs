@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>{{meta_title}}</title>
+    <meta name="description" content="{{meta_description}}" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {{! <link rel="author" href="//plus.google.com/YOUR-ID?rel=author" /> }}
+    <link rel="shortcut icon" href="{{asset "favicon.ico"}}">
+    <link type="text/css" rel="stylesheet" href="{{asset "assets/theme.css"}}">
+    <script type="text/javascript" src="{{asset "assets/prism.js"}}"></script>
+    {{ghost_head}}
+  </head>
+  <body class="{{body_class}}">
+    {{{body}}}
+
+    <footer class="site-footer text center padding">
+      <div>&copy; {{date format="YYYY"}} <a href="/">{{@blog.title}}</a>.</div>
+    </footer>
+  </body>
+
+  <script type="text/javascript">
+    window.addEventListener('load',
+      Prism.highlightAll);
+  </script>
+  {{ghost_foot}}
+</html>

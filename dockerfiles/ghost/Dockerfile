@@ -3,7 +3,7 @@ MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
 COPY copy /
 RUN \
   apk --update add nodejs git sqlite libuv libstdc++ openssl sqlite-dev python \
-    build-base openssl-dev zlib-dev libuv-dev linux-headers wget && \
+    build-base openssl-dev zlib-dev libuv-dev linux-headers wget git && \
   version=$(git ls-remote --tags https://github.com/tryghost/ghost.git | \
     awk '{ print $2 }' | awk -F/ '{ print $3 }' | grep -E '^([0-9]+\.)+' | \
       tail -n 1) && \
@@ -78,7 +78,7 @@ RUN \
         --shared-zlib \
     		--shared-libuv \
     		--shared-openssl; \
-      make install; \
+      make -j4 install; \
     else \
       >&2 echo "It looks like we had trouble with downloading Node, bailing."; \
       >&2 echo "Seriously, there was a problem."; \
@@ -92,7 +92,11 @@ RUN \
   } && \
 
   npm install pg mysql --save && \
+  mkdir -p /srv/ghost/themes && cd /srv/ghost/themes && \
+  git clone https://github.com/dreyacosta/velox.git && cd velox && \
+  git checkout -qf 07096a48c281a25408a00653a3ca252371a7a4e1 && \
+
   apk del git sqlite-dev python build-base openssl-dev zlib-dev libuv-dev \
     linux-headers wget && \
-  docker-helper cleanup
+  rm -rf .git && docker-helper cleanup
 VOLUME /srv/ghost

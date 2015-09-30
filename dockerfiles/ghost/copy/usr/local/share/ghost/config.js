@@ -53,6 +53,3 @@ if (process.env.DATABASE_TYPE && process.env.DATABASE_TYPE.toLowerCase() != "sql
 }
 
 module.exports = config;
-console.log(JSON.stringify(
-  config, null, 2
-));
