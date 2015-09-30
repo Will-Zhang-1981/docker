@@ -19,7 +19,10 @@ pull() {
 cd $root
 if [ $# -eq 1 ]; then
   parse_repository "$1"
-  if [ -d "dockerfiles/$repo" ]; then cd "dockerfiles/$repo"
+  if [ -d "dockerfiles/$repo" ]; then
+    cd "dockerfiles/$repo"
+    parse_repository "$1"
+    
     if [ -x script/pull ]; then script/pull $tag
     elif [ -f options/tags ] && [ "$tag" ]; then
       if grep -qE "^$tag/" options/tags; then
