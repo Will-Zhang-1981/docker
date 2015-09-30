@@ -34,19 +34,32 @@ if [ "$CI" ] && [ -z "$SKIP_LOGIN" ]; then
 fi
 
 if [ $# -eq 1 ]; then
-  if [ "$1" = "by-trigger" ]; then
+  if [ "$1" = "ci-images" ]; then
+    $0 $DOCKER_REPO
+
+  elif [ "$1" = "by-trigger" ]; then
     if [ "$CI" ]; then
       for v in dockerfiles/*; do
-        if [ -d $v ] && [ -f $v/trigger ]; then
-          cd $v && key=$(cat trigger); repo="$(basename "$(pwd)")"
-          curl -H "Content-Type: application/json" --data '{ "build": true }' -X POST \
-            https://registry.hub.docker.com/u/$user/$repo/trigger/$key/ 1> /dev/null 2>&1 || {
-              printf "There was an error pushing %s.\n" $repo
-              exit 1
-            }
+        cd $root
 
-          printf "Triggered %s\n" \
-            $repo
+        if [ -d $v ] && [ -f $v/trigger.enc ]; then
+          cd $v
+
+          data=$(openssl aes-256-cbc -k "$TRIGGER_KEY" -in trigger.enc -d)
+          build_on=$(echo $data | awk -F: '{ print $1 }')
+               key=$(echo $data | awk -F: '{ print $2 }')
+             repo="$(basename "$(pwd)")"
+
+          if [ "$build_on" = "$DOCKER_REPO" ]; then
+            curl -H "Content-Type: application/json" --data '{ "build": true }' -X POST \
+              https://registry.hub.docker.com/u/$user/$repo/trigger/$key/ 1> /dev/null 2>&1 || {
+                printf "There was an error pushing %s.\n" $repo
+                exit 1
+              }
+
+            printf "Triggered %s\n" \
+              $repo
+          fi
         fi
       done
     else
