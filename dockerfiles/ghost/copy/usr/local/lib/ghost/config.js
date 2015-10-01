@@ -1,7 +1,11 @@
-var   path = require("path");
+var     path = require("path"),
+  identifier = process.env.FORCE_SSL ? "https://" : "http://";
+        port = process.env.USE_PROXY ? "" : (":" +
+          process.env.PORT || "4000");
+
 var config = {
   production: {
-    url: "http://" + (process.env.DOMAIN || "localhost") + ":" + (process.env.PORT || "4000"),
+    url: process.env.URL || (identifier + (process.env.DOMAIN || "localhost") + port),
     smtp: {},
 
     paths: {

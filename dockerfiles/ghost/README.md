@@ -12,6 +12,9 @@ docker run --rm -p 4000:4000 \
 
 ## Environment variables
 
+* `$URL` - Full URL - Overrides `$PORT`, `$DOMAIN`, `$USE_PROXY` and `$FORCE_SSL`
+* `$FORCE_SSL` Default: false.
+* `$USE_PROXY` Default: false.
 * `$PORT` - Default: `4000`.
 * `$DOMAIN` - Default: `localhost`.
 * `$LISTEN_ADDRESS` - Default: `0.0.0.0`.
