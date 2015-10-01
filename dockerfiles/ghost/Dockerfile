@@ -97,3 +97,4 @@ RUN \
   rm -rf .git && docker-helper cleanup
 COPY copy /
 VOLUME /srv/ghost
+EXPOSE 4000
