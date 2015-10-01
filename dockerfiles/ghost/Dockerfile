@@ -7,10 +7,10 @@ RUN \
     awk '{ print $2 }' | awk -F/ '{ print $3 }' | grep -E '^([0-9]+\.)+' | \
       tail -n 1) && \
 
+  mkdir -p /usr/src && cd /usr/src && \
   wget -nv https://ghost.org/zip/ghost-$version.zip -O ghost.zip && \
   mkdir /usr/local/lib/ghost &&  \
-  unzip ghost.zip -d \
-    /usr/local/lib/ghost > /dev/null && \
+  unzip ghost.zip -d /usr/local/lib/ghost && \
 
   addgroup -Sg 634 ghost && \
   adduser  -SG ghost -u 634 -h /home/ghost ghost && \
@@ -18,12 +18,13 @@ RUN \
   docker-helper create_dir ghost:ghost  /srv/ghost && \
 
   cd /usr/local/lib/ghost && \
-  cp /usr/local/share/ghost/config.js config.js && \
+  mkdir -p /usr/local/share/ghost && \
   rm -rf config.example.js npm-shrinkwrap.json && \
   mv LICENSE /usr/local/share/ghost/COPY && \
   mv PRIVACY.md /usr/local/share/ghost/PRIVACY && \
   mv content/* /srv/ghost && \
-  rm -rf content/ && \
+  rm -rf README.md content/ \
+    Gruntfile.js && \
 
   rm -rf /srv/ghost/*/README.md && \
   chown -R ghost:ghost /srv/ghost && \
