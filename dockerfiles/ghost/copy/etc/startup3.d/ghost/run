@@ -1,4 +1,4 @@
 #!/bin/sh
-chown -Rh /srv/ghost
+chown -Rh ghost:ghost /srv/ghost
 exec chpst -u ghost:ghost \
   ghost
