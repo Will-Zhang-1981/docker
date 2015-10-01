@@ -2,7 +2,11 @@
 set -e
 port=5434
 if [ -f /usr/share/postgresql/default/users ] || [ -f /usr/share/postgresql/default/extensions ]; then
-  chpst -u postgres postgres -D /srv/postgresql -c "port=$port" 1>/dev/null 2>&1 &
+  # In reality we should accept more than just these two files but for now this works.
+
+  touch /var/log/postgres.tmp.log
+  chpst -u postgres postgres -D /srv/postgresql -c "config_file=/etc/postgresql/postgresql.conf" \
+    -c "port=$port" 1> /var/log/postgres.tmp.log 2>&1 &
   pid=$!
 
   count=0; started=
@@ -18,11 +22,13 @@ if [ -f /usr/share/postgresql/default/users ] || [ -f /usr/share/postgresql/defa
   done
 
   if [ -z "$started" ]; then
-    echo "Unable to start Postgresql"
+    echo "Unable to start Postgresql, maybe this log will help: "
+    cat /var/log/postgres.tmp.log
+    rm -rf /var/log/postgres.tmp.log
     exit 1
   fi
 
-  if [ -f /usr/share/postgresql/default/users ]; then
+  if [ -f /usr/share/postgresql/default/users ] && rm -rf /var/log/postgres.tmp.log; then
     for v in $(cat /usr/share/postgresql/default/users); do
       user=$(echo $v | awk -F: '{ print $1 }')
       pass=$(echo $v | awk -F: '{ print $2 }')
@@ -41,7 +47,7 @@ if [ -f /usr/share/postgresql/default/users ] || [ -f /usr/share/postgresql/defa
 
       chpst -u postgres:postgres createdb \
         --port=$port --owner=$user \
-          $data || true
+          --echo $data || echo "Database already existed, moving along."
     done
   fi
 
@@ -55,6 +61,8 @@ if [ -f /usr/share/postgresql/default/users ] || [ -f /usr/share/postgresql/defa
     done
   fi
 
+  rm -rf \
+    /var/log/postgres.tmp.log
   kill $pid
   wait $pid
 fi
