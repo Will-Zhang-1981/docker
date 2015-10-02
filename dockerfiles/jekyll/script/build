@@ -4,15 +4,12 @@ repo="$(cd $root; basename "$(pwd)")"
 set -e
 
 if [ $# -eq 2 ]; then
-  build=$2
-   user=$1
-     shift
-     shift
+  user=$1; shift
+   tag=$1; shift
 
 elif [ $# -eq 1 ]; then
   user=${DOCKER_USER:-jekyll}
-  repo=$1
-  shift
+   tag=$1; shift
 
 elif [ $# -gt 0 ]; then
   echo "Too many arguments, only one..two accepted."
@@ -21,9 +18,9 @@ fi
 
 cd $root
 script/sync
-if [ -d "tags/$build" ]; then
-  cd tags/$build
-  image=$user/$repo:$build
+if [ "$tag" ] && [ -d "tags/$tag" ]; then
+  cd tags/$tag
+  image=$user/$repo:$tag
   printf "Building the image %s\n" $image
   docker build -t $image .
   tput clear || true
@@ -31,10 +28,7 @@ elif [ $# -gt 1 ]; then
   >&2 echo "Too many tags given, only one accepted."
   exit 1
 else
-  # Incase tags is fully empty.
   for v in options/versions/*; do
-    $0 "$(
-      basename $v
-    )"
+    $0 "$(basename $v)"
   done
 fi
