@@ -28,20 +28,19 @@ rel() {
 }
 
 get_release() {
-  if [ -d options/releases ]; then
-    if [ -f options/releases/$tag ]; then
-      release=$(
-        cat options/releases/$tag
+  folder=options/releases
+  if [ -d $folder ]; then
+    if [ -f $folder/$tag ]
+      then release=$(
+        cat $folder/$tag
       )
-
-    elif [ -f options/releases/$type ]; then
-      release=$(
-        cat options/releases/$type
+    elif [ -f $folder/$type ]
+      then release=$(
+        cat $folder/$type
       )
-
-    elif [ -f options/releases/all ]; then
-      release=$(
-        cat options/releases/all
+    elif [ -f $folder/all ]
+      then release=$(
+        cat $folder/all
       )
     fi
   fi

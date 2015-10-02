@@ -18,8 +18,11 @@ parse_repository() {
     repo=$(echo "$1" | awk -F/ '{ print $2 }' | awk -F: '{ print $1 }')
      tag=$(echo "$1" | awk -F/ '{ print $2 }' | awk -F: '{ print $2 }')
   else
-    if [ -f options/user ];
-      then current_user=$(cat options/user); else current_user=$user
+    if [ ! -f options/user ];
+      then current_user=$user
+      else current_user=$(
+        cat options/user
+      )
     fi
 
      tag=$(echo "$1" | awk -F: '{ print $2 }')

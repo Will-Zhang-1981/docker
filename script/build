@@ -30,12 +30,8 @@ elif [ $# -eq 1 ]; then
   if [ -d "$folder" ]; then
     cd "$folder"
 
-    # For default user.
     parse_repository "$1"
-    if [ -x script/build ]; then
-      script/build $current_user \
-        $tag
-
+    if [ -x script/build ]; then script/build $current_user/$tag
     elif [ -d tags ] && [ "$tag" ] && [ -d "tags/$tag" ]; then
       cd tags/$tag && build $current_user/$repo:$tag
 
