@@ -31,7 +31,6 @@ parse_repository() {
     current_user=$(echo $1 | awk -F/ '{ print $1 }')
     repo=$(echo "$1" | awk -F/ '{ print $2 }' | awk -F: '{ print $1 }')
      tag=$(echo "$1" | awk -F/ '{ print $2 }' | awk -F: '{ print $2 }')
-     tag=${tag:-latest}
   else
     if [ "$user_set_user" ] || [ ! -f opts.yml ] || [ -z "$($yml user)" ]; then
       current_user=$user
@@ -43,7 +42,6 @@ parse_repository() {
 
      tag=$(echo "$1" | awk -F: '{ print $2 }')
     repo=$(echo "$1" | awk -F: '{ print $1 }')
-     tag=${tag:-latest}
   fi
 
 }

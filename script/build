@@ -49,6 +49,7 @@ elif [ $# -eq 1 ]; then
       >&2 echo "Create one or remove options/tags please."
       exit 1
     else
+      tag=${tag:-latest}
       build $current_user/$repo:$tag \
         .
     fi
