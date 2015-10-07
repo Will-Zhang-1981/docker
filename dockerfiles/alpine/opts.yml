@@ -4,7 +4,7 @@ pkgs:
   normal: runit@testing
   all: ca-certificates ncurses sudo
   dev: xz alpine-sdk linux-headers build-base autoconf m4
-  node: nodejs nodejs-legacy
+  node: nodejs
   python: python
   bash: bash
 
