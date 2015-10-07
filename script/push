@@ -7,6 +7,7 @@
 # * script/push user/repo:tag
 # * script/push repo:tag
 # * script/push repo
+# * script/push
 
 [ "$DEBUG" ] && set -x
 root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
@@ -69,11 +70,7 @@ if [ $# -eq 1 ]; then
   else
     parse_repository "$1"
     if [ "$repo" ] && [ -d "dockerfiles/$repo" ]; then
-      cd dockerfiles/$repo
-
-      if [ -x script/push ]; then
-        script/push $tag
-
+      cd dockerfiles/$repo; if [ -x script/push ]; then script/push $tag
       elif [ "$tag" ]; then
         image=$current_user/$repo:$tag
         if echo "$(images_with_tags)" | grep -qE "^$image\$"; then
@@ -83,10 +80,6 @@ if [ $# -eq 1 ]; then
             "$image"
           exit 1
         fi
-
-      elif [ -f auto ]; then
-        echo "Feature unavailable."
-
       else
         for v in $(available_images_with_tags $current_user $repo); do
           push $v
