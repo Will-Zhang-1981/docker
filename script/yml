@@ -11,8 +11,10 @@ options = {
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{__FILE__} [options]"
-  opts.on("-r", "--raise", "Raise instead of blank output.") { options[:should_raise] = true }
+  opts.on("-V", "--verify [KEY]", "Checks if array contains value.") { |k| options[:verify] = k }
+  opts.on("-R", "--root-verify [KEY]", "Check if root key exists.") { |k| options[:root_verify] = k }
   opts.on("-f", "--file [FILE]", "The file to parse; default: opts.yml") { |v| options[:file] = v }
+  opts.on("-r", "--raise", "Raise instead of blank output.") { options[:should_raise] = true }
   opts.on("-b", "--base-keys", "Print all the root keys.") { options[:base_keys] = true }
   opts.on("-k", "--keys-only", "Only print keys.") { options[:keys_only] = true }
 end.parse!
@@ -30,14 +32,23 @@ elsif options[:base_keys]
   $stdout.puts data.keys.join(
     " "
   )
+elsif options[:root_verify] && data.has_key?(options[:root_verify]) then exit 0
+elsif options[:root_verify]
+  exit 1
+  
 elsif key_path && (keys = key_path.split(".") rescue []).size > 0 && key_path !~ /\.\Z/
    keys.each do |k|
     if k == "" || !(data = data[k]) then if options[:should_raise]
-      then raise UnknownKeyError.new(k, keys) else exit
+      then raise UnknownKeyError.new(k, keys) else exit 1
     end end
   end
 
-  if data.is_a?(Array) then data.join(' ')
+  if options[:verify] && ((data.is_a?(Array) && data.include?(options[:verify])) || \
+        data.is_a?(Hash) && data.has_key?(options[:verify]))
+    exit 0
+
+  elsif  options[:verify] then exit 1
+  elsif data.is_a?(Array) then data.join(' ')
   elsif !options[:keys_only] && data.is_a?(Hash) then
     out=''; data.each do |k, v|
       v = v.join(" ") if v.is_a?(Array)
