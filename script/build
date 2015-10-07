@@ -4,12 +4,10 @@
 # dockerfiles) or any images for that matter. Some images provide a recipe and
 # if those images provide a recipe it gets used.
 #
-# script/build /image
-# script/build /image:tag
-# script/build user/image:tag
-# script/build user/image
-# script/build image:tag
-# script/build image
+# script/build -u user repo
+# script/build -u user repo:tag
+# script/build repo:tag
+# script/build repo
 
 root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
 . $root/vendor/script/helpers
@@ -25,13 +23,13 @@ if [ $# -eq 1 ] && [ "$1" = "travis" ]; then
   $0 $DOCKER_REPO
 
 elif [ $# -eq 1 ]; then
-  parse_repository "$1"
+  parse_repository "$1" # repo part
   folder="$root/dockerfiles/$repo"
   if [ -d "$folder" ]; then
     cd "$folder"
 
-    parse_repository "$1"
-    if [ -x script/build ]; then script/build $current_user/$tag
+    parse_repository "$1" # user, repo and tag part.
+    if [ -x script/build ]; then script/build -u $current_user $tag
     elif [ -d tags ] && [ "$tag" ] && [ -d "tags/$tag" ]; then
       cd tags/$tag && build $current_user/$repo:$tag
 
@@ -46,23 +44,20 @@ elif [ $# -eq 1 ]; then
         )"
       done
 
-    elif [ -f options/tags ]; then
+    elif [ -f opts.yml ] && [ "$($root/script/yml -b)" != "user" ]; then
       >&2 echo "This repo requires a build script."
       >&2 echo "Create one or remove options/tags please."
       exit 1
-
     else
-      if [ -z "$current_user" ]
-        # That way you can send /image:tag and build a private image!
-        then build "$repo:${tag:-latest}" .; else build "$current_user/$repo:${tag:-latest}" .
-      fi
+      build $current_user/$repo:$tag \
+        .
     fi
   else
     >&2 echo "No repository."
     exit 1
   fi
 
-  tput clear || true
+  clear_screen
 elif [ $# -gt 1 ]; then
   for v in "$@"; do
     $0 $v

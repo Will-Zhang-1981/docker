@@ -8,9 +8,9 @@ testing_url="http://nl.alpinelinux.org/alpine/$RELEASE/testing"
 release_url="http://nl.alpinelinux.org/alpine/$RELEASE/main"
 tmp=$(mktemp -d)
 
-for v in $(cat $OPTIONS_DIR/apks); do
-	pkg=$(echo $v | awk -F: '{ print $2 }')
+for v in $APK_KEYS_SHA:$APK_KEYS_APK $APK_TOOL_SHA:$APK_TOOL_APK; do
 	sha=$(echo $v | awk -F: '{ print $1 }')
+	pkg=$(echo $v | awk -F: '{ print $2 }')
   wget -nv -O $tmp/$pkg $release_url/$arch/$pkg
 	if [ "$(sha256sum $tmp/$pkg)" != "$sha  $tmp/$pkg" ]; then
 		>&2 printf "%s sha error." $pkg
@@ -50,15 +50,7 @@ cp /etc/hosts $rootfs/etc/hosts
 cp /etc/resolv.conf $rootfs/etc/resolv.conf
 echo $release_url > $rootfs/etc/apk/repositories
 printf "@testing %s\n" $testing_url >> $rootfs/etc/apk/repositories
-for v in "$OPTIONS_DIR/pkgs/all" "$OPTIONS_DIR/pkgs/$REPO" "$OPTIONS_DIR/pkgs/$TAG" "$OPTIONS_DIR/pkgs/$TYPE"; do
-  if [ -f "$v" ]; then
-		cp $v $rootfs/tmp/pkgs
-		chroot $rootfs sh -ec "{
-			apk --no-progress --update add \$(cat /tmp/pkgs)
-			rm -rf /tmp/pkgs
-		}"
-	fi
-done
+chroot $rootfs sh -ec "apk --no-progress --update add $PACKAGES"
 
 chroot $rootfs sh -ec '{
 	mv /var/run/* /run

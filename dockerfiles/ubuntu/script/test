@@ -1,8 +1,1 @@
-#!/bin/sh
-
-user=${DOCKER_USER:-envygeeks}
-root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
-repo=${DOCKER_REPO:-$(cat $root/options/repo)}
-
-docker run --rm --env="CI=$CI" --env="TRAVIS=$TRAVIS" -it "$user/$repo:latest" \
-  docker-test prepare run
+../../../vendor/scratch/test

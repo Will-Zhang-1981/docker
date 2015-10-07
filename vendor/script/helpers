@@ -1,40 +1,68 @@
 #!/bin/sh
-default_user=envygeeks
-set_user() {
-  if [ "$DOCKER_USER" ]
-    then user=$DOCKER_USER; else user=$default_user
-  fi
-}
+default_user=envygeeks; user=
+while getopts ":u:" opt "$@"; do
+  case $opt in
+    u) user=$OPTARG; user_set_user=true;;
+  esac
+done
+shift $((
+  OPTIND-1
+))
 
-# Takes the passed argv user/repo:tag and parses it to:
-# current_user: user part or $user
-# repo: the repo part
-# tag: tag part.
+if [ -z "$user" ]; then
+  user=$default_user
+fi
 
-set_user
+# By default we expect you to send `script/build -u user repo:tag`, however,
+# because we would like to stay the same as `docker` above the `script/build` in
+# a particular `dockerfiles/*` we also accept `script/build user/repo:tag`. This
+# is not meant to be used in any scenario but the root `script/build`
+#
+# The current_user is set above and beyond the user, so if you send a user and
+# we detect it, and then you send `user/repo:tag` then the current user will be
+# that particular user unless you didn't send `-u` then we will use the base
+# default: `$default_user`
+
 parse_repository() {
+  local root=$(cd "$(dirname "$(readlink -f $0)")/../.."; pwd)
+  local yml=$root/script/yml
+
   if echo "$1" | grep -q '/'; then
     current_user=$(echo $1 | awk -F/ '{ print $1 }')
     repo=$(echo "$1" | awk -F/ '{ print $2 }' | awk -F: '{ print $1 }')
      tag=$(echo "$1" | awk -F/ '{ print $2 }' | awk -F: '{ print $2 }')
+     tag=${tag:-latest}
   else
-    if [ ! -f options/user ];
-      then current_user=$user
-      else current_user=$(
-        cat options/user
+    if [ "$user_set_user" ] || [ ! -f opts.yml ] || [ -z "$($yml user)" ]; then
+      current_user=$user
+    else
+      current_user=$(
+        $yml user
       )
     fi
 
      tag=$(echo "$1" | awk -F: '{ print $2 }')
     repo=$(echo "$1" | awk -F: '{ print $1 }')
+     tag=${tag:-latest}
   fi
+
 }
 
 # Providing a user ($1) with a repo ($2) we will return all of the built tags so
 # that you can do as you please with it.
+# @return 0
 
 available_images_with_tags() {
   for v in $(docker images | grep -E "^$1/$2" | awk '{ print $2 }' | sort -u); do
     printf "%s/%s:%s\n" "$1" "$2" "$v"
   done
+}
+
+# Clears the screen unless DISABLE_CLEAR is passed.
+# @returns 0
+
+clear_screen() {
+  if [ -z "$DISABLE_CLEAR" ]; then
+    tput clear || true
+  fi
 }

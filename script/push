@@ -21,7 +21,7 @@ push() {
     fi
 
     docker push $1 && break
-    tput clear || true
+    clear_screen
   done
 }
 

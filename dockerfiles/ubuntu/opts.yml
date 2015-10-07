@@ -1,0 +1,37 @@
+type: scratch
+pkgs:
+  bash: bash
+  all: sudo ca-certificates
+  dev: libxslt1-dev libxml2-dev build-essential libffi-dev libyaml-dev
+  node: nodejs nodejs-legacy
+  normal: runit
+  python: python
+  ruby: ruby
+
+releases:
+  all: wily
+  lts: trusty
+
+entries:
+  normal: /usr/local/bin/startup
+  dev: /usr/local/bin/build
+
+tags:
+  dev: dev
+  tiny: simple
+  node: simple
+  latest: normal
+  python: simple
+  ruby: simple
+  bash: normal
+  lts: normal
+
+env:
+  REMOVE:
+    - vim-tiny
+    - vim-common
+    - isc-dhcp-client
+    - isc-dhcp-common
+    - iputils-ping
+    - rsyslog
+    - eject

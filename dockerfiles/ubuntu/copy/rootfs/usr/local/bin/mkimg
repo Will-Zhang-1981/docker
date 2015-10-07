@@ -27,14 +27,17 @@ cd -> /dev/null
 
 rm -rf $rootfs/etc/hosts
 rm -rf $rootfs/etc/resolv.conf
-cp $OPTIONS_DIR/remove $rootfs/tmp/remove
 cp /etc/resolv.conf $rootfs/etc/resolv.conf
 cp /etc/hosts $rootfs/etc/hosts
 
 chroot "$rootfs" sh -ec "{
 	dpkg-divert --local --rename --add /sbin/initctl
+	dpkg-divert --local --rename --add /usr/sbin/update-rc.d
+	ln -s /bin/true /usr/sbin/update-rc.d
 	ln -s /bin/true /sbin/initctl
+}"
 
+chroot "$rootfs" sh -ec "{
 	sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
 	echo \"debconf debconf/frontend select Noninteractive\" | debconf-set-selections
 	echo 'Dpkg::Options { \"--force-confdef\"; \"--force-confold\"; }' > /etc/apt/apt.conf.d/local
@@ -47,13 +50,12 @@ chroot "$rootfs" sh -ec "{
 	apt-get install --no-install-recommends -yf \
 		locales deborphan
 
-	apt-get autoremove --purge \$(cat /tmp/remove) -yf
+	apt-get autoremove --purge $REMOVE -yf
 	apt-get autoremove --purge \$(deborphan --guess-all) deborphan -yf
+	apt-get install --no-install-recommends -y $PACKAGES
 	apt-get autoclean
 	apt-get clean
 
-	rm -rf /sbin/initctl
-	dpkg-divert --local --rename --remove /sbin/initctl
 	rm -rf /tmp/remove
 }"
 
@@ -73,20 +75,6 @@ else
 	rm -rf $rootfs/usr/local/bin/startup
 fi
 
-for v in "$OPTIONS_DIR/pkgs/all" "$OPTIONS_DIR/pkgs/$TYPE" "$OPTIONS_DIR/pkgs/$TAG"; do
-	if [ -f "$v" ]; then
-		cp $v $rootfs/tmp/pkgs
-		chroot $rootfs sh -ec "{
-			dpkg-divert --local --rename --add /sbin/initctl
-			ln -s /bin/true /sbin/initctl
-
-			apt-get install --no-install-recommends -yf \$(cat /tmp/pkgs)
-			rm -rf /tmp/pkgs /sbin/initctl
-			dpkg-divert --local --rename \\
-				--remove /sbin/initctl
-		}"
-	fi
-done
 
 rm -rf $rootfs/etc/hosts
 rm -rf $rootfs/etc/resolv.conf

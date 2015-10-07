@@ -4,23 +4,17 @@ set -e
 tmpdir=$(mktemp -d)
 root=$(cd "$(dirname $0)/.."; pwd)
 parent_root=$(cd "$(dirname "$(readlink -f $0)")/../.."; pwd)
+. $parent_root/vendor/script/helpers
 repo="$(cd $root; basename "$(pwd)")"
+yml=$parent_root/script/yml
 [ "$DEBUG" ] && set -x
 cd $root
 
-if [ $# -eq 1 ]; then
-  user=$1
-  shift
-
-elif [ $# -eq 2 ]; then
-  build=$2
-   user=$1
-
-  shift
-  shift
-elif [ $# -gt 0 ]; then
-  >&2 echo "Too many tags given, only one..two accepted."
-  exit 1
+if [ $# -eq 1 ]; then build=$1; elif [ $# -gt 0 ]; then
+  for v in "$@"; do
+    $0 "$v"
+  done
+  exit
 fi
 
 rel() {
@@ -28,21 +22,17 @@ rel() {
 }
 
 get_release() {
-  folder=options/releases
-  if [ -d $folder ]; then
-    if [ -f $folder/$tag ]
-      then release=$(
-        cat $folder/$tag
-      )
-    elif [ -f $folder/$type ]
-      then release=$(
-        cat $folder/$type
-      )
-    elif [ -f $folder/all ]
-      then release=$(
-        cat $folder/all
-      )
-    fi
+  release=$($yml -f ./opts.yml releases.$tag)
+  if [ -z "$release" ]; then
+    release=$(
+      $yml -f ./opts.yml releases.$type
+    )
+  fi
+
+  if [ -z "$release" ]; then
+    release=$(
+      $yml -f ./opts.yml releases.all
+    )
   fi
 }
 
@@ -72,11 +62,31 @@ teardown() {
   return 0
 }
 
+write_env() {
+  echo "CI=$CI" >> $env_file
+  echo "DEBUG=$DEBUG" >> $env_file
+  echo "TRAVIS=$TRAVIS" >> $env_file
+  echo "CACHE_DIR=$cache_dir" >> $env_file
+  echo "COMMON_DIR=$common_dir" >> $env_file
+  echo "ARCHIVE_TAR=$archive_tar" >> $env_file
+  echo "COPY_REPO_DIR=$copy_repo_dir" >> $env_file
+  echo "PACKAGES=$($yml pkgs.all) $($yml pkgs.$tag) $($yml pkgs.$type)" >> $env_file
+  echo "COPY_TYPE_DIR=$copy_type_dir" >> $env_file
+  echo "COPY_TAG_DIR=$copy_tag_dir" >> $env_file
+  echo "RELEASE=$release" >> $env_file
+  echo "REPO=$repo" >> $env_file
+  echo "TYPE=$type" >> $env_file
+  echo "USER=$user" >> $env_file
+  echo "TAG=$tag" >> $env_file
+  $yml -f opts.yml env >> \
+    $env_file
+}
+
 trap -- _trap QUIT TERM INT EXIT
 rootfs_dockerfile=$(rel $tmpdir)/$(rel "$(mktemp -u)")
        dockerfile=$(rel $tmpdir)/$(rel "$(mktemp -u)")
+         env_file=$(rel $tmpdir)/$(rel "$(mktemp -u)")
 
-  # options: options/ folder
   # copy_repo: copy/$repo folder
   # common: vendor/common (from main root)
   # archive: The tar.gz file you write to.
@@ -85,7 +95,6 @@ rootfs_dockerfile=$(rel $tmpdir)/$(rel "$(mktemp -u)")
   # release: releases/* file
   # cache: cache/ folder.
 
-  options_dir=$(mktemp --tmpdir=$tmpdir -u)
    common_dir=$(mktemp --tmpdir=$tmpdir -u)
  copy_tag_dir=$(mktemp --tmpdir=$tmpdir -u)
 copy_repo_dir=$(mktemp --tmpdir=$tmpdir -u)
@@ -100,12 +109,11 @@ printf "Building the temporary rootfs image %s\n" "rootfs:$repo"
 docker build -f $rootfs_dockerfile -t "rootfs:$repo" .
 rm -rf $rootfs_dockerfile
 unset   rootfs_dockerfile
-tput clear || true
+clear_screen
 
-for img in $(cat options/tags); do
-   type=$(echo $img  | awk -F/ '{ print $2 }')
-    tag=$(echo $img  | awk -F/ '{ print $1 }')
-    get_release
+for tag in $($yml -k tags); do
+  type=$($yml tags.$tag)
+  get_release
 
   if [ "$build" ] && [ "$tag" != "$build" ]; then
     continue
@@ -115,40 +123,21 @@ for img in $(cat options/tags); do
   printf "Building the image %s\n" $user/$repo:$tag
   setup
 
-  docker run --rm "$@" \
-    --env="DEBUG=$DEBUG" \
-    --env="TRAVIS=$TRAVIS" \
-    --env="CI=$CI" \
-    \
-    --env="CACHE_DIR=$cache_dir" \
-    --env="ARCHIVE_TAR=$archive_tar" \
-    --env="OPTIONS_DIR=$options_dir" \
-    --env="COMMON_DIR=$common_dir" \
-    \
+  write_env
+  docker run --rm \
     --volume=$root/cache:$cache_dir \
     --volume="$root/$(rel $archive_tar):$archive_tar" \
     --volume="$root/$(rel  $common_dir):$common_dir:ro" \
-    --volume=$root/options:$options_dir:ro \
-    \
-    --env="COPY_REPO_DIR=$copy_repo_dir" \
-    --env="COPY_TYPE_DIR=$copy_type_dir" \
-    --env="COPY_TAG_DIR=$copy_tag_dir" \
-    \
     --volume=$root/copy/$type:$copy_type_dir:ro \
     --volume=$root/copy/$tag:$copy_tag_dir:ro \
     --volume=$root/copy/$repo:$copy_repo_dir:ro \
-    \
-    --env="REPO=$repo" \
-    --env="TYPE=$type" \
-    --env="RELEASE=$release" \
-    --env="USER=$user" \
-    --env="TAG=$tag" \
+    --env-file=$env_file \
     -it rootfs:$repo
 
   cp $parent_root/vendor/scratch/scratch $dockerfile
-  entry=$(cat options/entries | awk "/^$repo[ ]+/ { print \$2 }")
-  [ -z "$entry" ] && entry=$(cat options/entries | awk  "/^$tag[ ]+/ { print \$2 }")
-  [ -z "$entry" ] && entry=$(cat options/entries | awk "/^$type[ ]+/ { print \$2 }")
+  entry=$($yml entries.$tag)
+  [ "$entry" ] || entry=$($yml entries.$type)
+  [ "$entry" ] || entry=$($yml entries.all)
   printf "\nADD %s /" "$(rel $archive_tar)" >> $dockerfile
   [ "$entry" ] && printf "\nENTRYPOINT [\"%s\"]" \
     "$entry" >> $dockerfile
@@ -156,9 +145,9 @@ for img in $(cat options/tags); do
   teardown
   docker build -f $dockerfile -t $user/$repo:$tag .
   rm -rf "$(rel $archive)" $dockerfile
-  tput clear || true
+  clear_screen
 done
 
 # Just to cleanup.
 docker rmi -f "rootfs:$repo" || true
-tput clear || true
+clear_screen
