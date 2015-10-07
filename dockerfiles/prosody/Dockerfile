@@ -4,7 +4,6 @@ RUN \
   apk --update add prosody@testing lua-zlib@testing lua-event@testing \
     lua-sec lua && \
 
-  adduser  -SG prosody -u 622 -h /var/lib/prosody prosody && \
   docker-helper reset_user prosody:622 && \
   docker-helper create_dir prosody:prosody /run/prosody && \
   docker-helper enable_stdout_logger && \
