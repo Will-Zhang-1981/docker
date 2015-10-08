@@ -64,3 +64,27 @@ clear_screen() {
     tput clear || true
   fi
 }
+printf_black()   { tput setaf 0; printf "$@"; tput sgr0; }
+printf_red()     { tput setaf 1; printf "$@"; tput sgr0; }
+printf_green()   { tput setaf 2; printf "$@"; tput sgr0; }
+printf_yellow()  { tput setaf 3; printf "$@"; tput sgr0; }
+printf_blue()    { tput setaf 4; printf "$@"; tput sgr0; }
+printf_magenta() { tput setaf 5; printf "$@"; tput sgr0; }
+printf_cyan()    { tput setaf 6; printf "$@"; tput sgr0; }
+printf_white()   { tput setaf 7; printf "$@"; tput sgr0; }
+echo_black()     { tput setaf 0;   echo "$@"; tput sgr0; }
+echo_red()       { tput setaf 1;   echo "$@"; tput sgr0; }
+echo_green()     { tput setaf 2;   echo "$@"; tput sgr0; }
+echo_yellow()    { tput setaf 3;   echo "$@"; tput sgr0; }
+echo_blue()      { tput setaf 4;   echo "$@"; tput sgr0; }
+echo_magenta()   { tput setaf 5;   echo "$@"; tput sgr0; }
+echo_cyan()      { tput setaf 6;   echo "$@"; tput sgr0; }
+echo_white()     { tput setaf 7;   echo "$@"; tput sgr0; }
+run_black()      { tput setaf 0;   eval "$@"; tput sgr0; }
+run_red()        { tput setaf 1;   eval "$@"; tput sgr0; }
+run_green()      { tput setaf 2;   eval "$@"; tput sgr0; }
+run_yellow()     { tput setaf 3;   eval "$@"; tput sgr0; }
+run_blue()       { tput setaf 4;   eval "$@"; tput sgr0; }
+run_magenta()    { tput setaf 5;   eval "$@"; tput sgr0; }
+run_cyan()       { tput setaf 6;   eval "$@"; tput sgr0; }
+run_white()      { tput setaf 7;   eval "$@"; tput sgr0; }
