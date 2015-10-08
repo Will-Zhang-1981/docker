@@ -57,13 +57,18 @@ available_images_with_tags() {
 }
 
 # Clears the screen unless DISABLE_CLEAR is passed.
+# This also supports travis folding, just send the tag and title.
 # @returns 0
 
 clear_screen() {
   if [ -z "$DISABLE_CLEAR" ]; then
     tput clear || true
+    if [ $# -gt 0 ]; then
+      printf "travis_fold:%s\r\033[0K" "$@"
+    fi
   fi
 }
+
 printf_black()   { tput setaf 0; printf "$@"; tput sgr0; }
 printf_red()     { tput setaf 1; printf "$@"; tput sgr0; }
 printf_green()   { tput setaf 2; printf "$@"; tput sgr0; }
