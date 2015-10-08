@@ -10,11 +10,10 @@ yml=$root/script/yml
 set -e
 
 pull() {
-  printf "Pulling the image %s\n" $1
-  if [ "$SHOW_DOCKER_OUTPUT" ]
-    then docker pull $1
-    else docker pull $1 > /dev/null
-  fi
+  printf_green "Pulling the image %s\n" $1
+  docker pull $1
+  clear_screen \
+    $1
 }
 
 cd $root
@@ -29,7 +28,7 @@ if [ $# -eq 1 ]; then
       pull $current_user/$repo:$tag
 
     elif [ "$tag" ]; then
-      >&2 printf "Unable to find the tag '%s'\n" "$tag"
+      >&2 printf_red "Unable to find the tag '%s'\n" $tag
       exit 1
 
     elif [ -f opts.yml ] && $yml -R tags; then
@@ -41,7 +40,7 @@ if [ $# -eq 1 ]; then
       pull $current_user/$repo:$tag
     fi
   else
-    >&2 echo "Unknown repository"
+    >&2 echo_red "Unknown repository"
     exit 1
   fi
 elif [ $# -gt 1 ]; then
@@ -50,8 +49,6 @@ elif [ $# -gt 1 ]; then
   done
 else
   for v in dockerfiles/*; do
-    $0 "$(
-      basename $v
-    )"
+    $0 "$(basename $v)"
   done
 fi

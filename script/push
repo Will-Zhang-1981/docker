@@ -17,19 +17,19 @@ set -e
 push() {
   for i in 1 2 3; do
     if [ $i -gt 1 ]
-      then printf "\nRetrying to push  %s\n" $1
-      else printf "\nPushing %s to Docker\n" $1
+      then printf_yellow "\nRetrying to push  %s\n" $1
+      else printf_green  "\nPushing %s to Docker\n" $1
     fi
 
     docker push $1 && break
-    clear_screen
+    clear_screen $1
   done
 }
 
 if [ "$CI" ] && [ -z "$SKIP_LOGIN" ]; then
   docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" \
     -p="$DOCKER_PASSWORD" > /dev/null 2>&1 <&- || {
-      >&2 echo "Unable to login."
+      >&2 echo_red "Unable to login."
       exit 1
     }
 fi
@@ -58,25 +58,29 @@ if [ $# -eq 1 ]; then
                 exit 1
               }
 
-            printf "Triggered %s\n" \
+            printf_green "Triggered %s\n" \
               $repo
           fi
         fi
       done
     else
-      echo "This feature is for CI's"
+      >&2 echo_red "This feature is for CI's"
       exit 1
     fi
   else
     parse_repository "$1"
     if [ "$repo" ] && [ -d "dockerfiles/$repo" ]; then
-      cd dockerfiles/$repo; if [ -x script/push ]; then script/push $tag
+      cd dockerfiles/$repo
+
+      if [ -x script/push ]; then
+        script/push $tag
+
       elif [ "$tag" ]; then
         image=$current_user/$repo:$tag
         if echo "$(images_with_tags)" | grep -qE "^$image\$"; then
           push $image
         else
-          >&2 printf "%s doesn't exist in a built state.\n" \
+          >&2 printf_red "%s doesn't exist in a built state.\n" \
             "$image"
           exit 1
         fi
@@ -86,7 +90,7 @@ if [ $# -eq 1 ]; then
         done
       fi
     else
-      >&2 printf "Unknown repo %s" $repo
+      >&2 printf_red "Unknown repo %s" $repo
       exit 1
     fi
   fi

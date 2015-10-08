@@ -109,7 +109,8 @@ printf "Building the temporary rootfs image %s\n" "rootfs:$repo"
 docker build -f $rootfs_dockerfile -t "rootfs:$repo" .
 rm -rf $rootfs_dockerfile
 unset   rootfs_dockerfile
-clear_screen
+clear_screen \
+  "rootfs:$repo"
 
 for tag in $($yml -k tags); do
   type=$($yml tags.$tag)
@@ -120,11 +121,11 @@ for tag in $($yml -k tags); do
   fi
 
   touch "$(rel $archive_tar)"
-  printf "Building the image %s\n" $user/$repo:$tag
+  printf_green "Building the image %s\n" $user/$repo:$tag
   setup
 
   write_env
-  docker run --rm \
+  run_yellow docker run --rm \
     --volume=$root/cache:$cache_dir \
     --volume="$root/$(rel $archive_tar):$archive_tar" \
     --volume="$root/$(rel  $common_dir):$common_dir:ro" \
@@ -145,7 +146,7 @@ for tag in $($yml -k tags); do
   teardown
   docker build -f $dockerfile -t $user/$repo:$tag .
   rm -rf "$(rel $archive)" $dockerfile
-  clear_screen
+  clear_screen $user/$repo:$tag
 done
 
 # Just to cleanup.
