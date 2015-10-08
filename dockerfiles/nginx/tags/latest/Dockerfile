@@ -1,11 +1,8 @@
-FROM <%= img %>
+FROM envygeeks/alpine:latest
 MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
 RUN \
-  <%= script %> && \
-  <% if tag == "ubuntu" %>
-    usermod  -l nginx www-data && \
-    groupmod -n nginx www-data && \
-  <% end %>
+  apk --update add nginx-lua lua-socket && \
+  
   sed -ri 's!/var/www/localhost/htdocs!/srv/nginx!' /etc/passwd && \
   sed -ri 's!:Linux User,{3}:!:nginx:!' /etc/passwd && \
   docker-helper reset_users nginx:612 && \

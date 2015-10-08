@@ -1,11 +1,11 @@
-FROM <%= img %>
+FROM envygeeks/ubuntu:lts
 MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
 RUN \
-  <%= script %> && \
-  <% if tag == "ubuntu" %>
+  apt-get update && apt-get install --no-install-recommends -y nginx-extras lua-socket && \
+  
     usermod  -l nginx www-data && \
     groupmod -n nginx www-data && \
-  <% end %>
+  
   sed -ri 's!/var/www/localhost/htdocs!/srv/nginx!' /etc/passwd && \
   sed -ri 's!:Linux User,{3}:!:nginx:!' /etc/passwd && \
   docker-helper reset_users nginx:612 && \
