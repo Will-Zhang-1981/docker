@@ -22,16 +22,16 @@ rel() {
 }
 
 get_release() {
-  release=$($yml -f ./opts.yml releases.$tag)
+  release=$($yml releases.$tag)
   if [ -z "$release" ]; then
     release=$(
-      $yml -f ./opts.yml releases.$type
+      $yml releases.$type
     )
   fi
 
   if [ -z "$release" ]; then
     release=$(
-      $yml -f ./opts.yml releases.all
+      $yml releases.all
     )
   fi
 }
