@@ -128,3 +128,10 @@ teardown() {
   run test "$(stat -c %u /test.txt)" == "602"
   assert_true $status
 }
+
+@test "#get_file_uid: it returns the UID" {
+  touch /test.txt && chown 1001:1001 /test.txt
+  run get_file_uid /test.txt
+  assert_eq "$output" \
+    1001
+}

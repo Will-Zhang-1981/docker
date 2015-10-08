@@ -230,6 +230,14 @@ reset_user() {
   reset_users "$@"
 }
 
+# Gives you the UID of a file so that you can get work done.
+# @echo UID (from `stat`)
+# @return 0
+
+get_file_uid() {
+  echo $(stat -c '%u' $1)
+}
+
 . /usr/local/share/docker/helpers.d/pkg
 . /usr/local/share/docker/helpers.d/apt
 . /usr/local/share/docker/helpers.d/apk
