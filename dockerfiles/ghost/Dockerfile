@@ -28,6 +28,30 @@ RUN \
 
   rm -rf /srv/ghost/*/README.md && \
   chown -R ghost:ghost /srv/ghost && \
+  echo ' \
+    .editor .markdown-editor { \
+      font-family: "Fira Mono", Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace; \
+    } \
+    \
+    .content-preview-content h1, \
+    .content-preview-content h2, \
+    .content-preview-content h3, \
+    .content-preview-content h4, \
+    .content-preview-content h5, \
+    .content-preview-content h6, \
+    .entry-preview-content h1,   \
+    .entry-preview-content h2,   \
+    .entry-preview-content h3,   \
+    .entry-preview-content h4,   \
+    .entry-preview-content h5,   \
+    .entry-preview-content h6 {  \
+      font-family: Raleway, "Open Sans"; \
+    } \
+    \
+    .content-preview-content, .entry-preview-content { \
+      font-family: Merriweather, "Open Sans"; \
+    } \
+  ' > /usr/local/lib/ghost/built/assets/ghost.min.css && \
 
   # SQLite < 3.1 has trouble on Alpine, we need to force it to update. Once we
   # see the already updated message next time we will remove this so that this
