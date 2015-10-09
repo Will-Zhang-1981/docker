@@ -1,5 +1,6 @@
 #!/bin/sh
-set -e
-cd /usr/local/lib/ghost
-npm start \
-  --production
+set -e; cd /usr/local/lib/ghost
+if [ "$GHOST_ENV" = "production" ]; then
+  npm start --production; else npm start --development
+  echo "Ghost in %s" "$GHOST_ENV"
+fi
