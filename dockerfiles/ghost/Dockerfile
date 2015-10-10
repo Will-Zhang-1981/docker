@@ -51,7 +51,7 @@ RUN \
     .content-preview-content, .entry-preview-content { \
       font-family: Merriweather, "Open Sans"; \
     } \
-  ' > /usr/local/lib/ghost/built/assets/ghost.min.css && \
+  ' >> /usr/local/lib/ghost/core/built/assets/ghost.min.css && \
 
   # SQLite < 3.1 has trouble on Alpine, we need to force it to update. Once we
   # see the already updated message next time we will remove this so that this
