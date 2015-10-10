@@ -1,13 +1,17 @@
 #!/bin/sh
 set -e
 
-for u in $(cat users.txt); do
-  usr=$(echo $u | awk -F: '{ print $1 }')
-  uid=$(echo $u | awk -F: '{ print $2 }')
+for v in $(cat users.txt); do
+  if echo $v | grep -qE "(^\*:|:skip$)"; then
+    continue
+  else
+    usr=$(echo $v | awk -F: '{ print $1 }')
+    uid=$(echo $v | awk -F: '{ print $2 }')
 
-  ! getent passwd docker-$usr > /dev/null && {
-    sudo groupadd -rg $uid docker-$usr
-    sudo useradd   -u $uid -g $uid \
-      -rMd /srv/docker/home/$usr docker-$usr
-  }
+    ! getent passwd docker-$usr > /dev/null && {
+      sudo groupadd -rg $uid docker-$usr
+      sudo useradd   -u $uid -g $uid \
+        -rMd /srv/docker/home/$usr docker-$usr
+    }
+  fi
 done
