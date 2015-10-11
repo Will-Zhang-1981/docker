@@ -1,3 +1,5 @@
+/Gemfile.lock
+/.bundle/config
 /compose.yml
 /port.md
 /tmp
