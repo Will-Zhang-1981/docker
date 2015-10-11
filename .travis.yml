@@ -1,10 +1,15 @@
 ---
 before_script: script/build travis
-script: script/test travis
+script:
+  - bundle exec rake spec
+  - script/test    travis
 after_success:
 - script/push ci-images
 - script/push by-trigger
+cache: bundler
 sudo: 9000
+rvm:
+  - 2.2
 env:
   matrix:
   - DOCKER_REPO=ubuntu

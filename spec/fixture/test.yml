@@ -1,0 +1,12 @@
+---
+key1: val1
+key2: val2
+key3:
+ keya: vala
+key4:
+- val4
+- val5
+key5:
+  keya: vala
+  keyb: valb
+  keyc: valc

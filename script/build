@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # Provides a means to build any image inside of this repository (via
 # dockerfiles) or any images for that matter. Some images provide a recipe and
@@ -12,8 +13,7 @@
 root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
 . $root/vendor/script/helpers
 [ "$DEBUG" ] && set -x
-yml=$root/script/yml
-set -e
+yaml=$root/script/yaml
 
 build() {
   printf_green "Building the image %s\n" $1
@@ -30,9 +30,12 @@ elif [ $# -eq 1 ]; then
   if [ -d "$folder" ]; then
     cd "$folder"
 
-    parse_repository "$1" # user, repo and tag part.
-    if [ -x script/build ]; then script/build -u $current_user $tag
-    elif [ "$tag" ] && [ -f opts.yml ] && $yml -R tags && $yml -V $tag tags; then
+    parse_repository "$1"
+    if [ -x script/build ]; then
+      script/build -u \
+        $current_user $tag
+
+    elif [ "$tag" ] && [ -f opts.yml ] && $yaml -V tags && $yaml tags -V $tag; then
       [ -f script/sync ] && script/sync; if [ -d "tags/$tag" ]; then
         cd tags/$tag
         build $current_user/$repo:$tag \
@@ -46,8 +49,8 @@ elif [ $# -eq 1 ]; then
       >&2 printf_red "Nonexistant tag: %s\n" \
         $tag; exit 1
 
-    elif [ -f opts.yml ] && $yml -R tags; then
-      [ -f script/sync ] && script/sync; for v in $($yml -k tags); do
+    elif [ -f opts.yml ] && $yaml -V tags; then
+      [ -f script/sync ] && script/sync; for v in $($yaml -k tags); do
         cd $root/dockerfiles/$repo/tags/$v && build \
             $current_user/$repo:$v .
       done

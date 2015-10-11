@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-helpers_yml=$(cd "$(dirname $0)/.."; pwd)/script/yml
+helpers_yaml=$(cd "$(dirname $0)/.."; pwd)/script/yaml
 default_user=envygeeks; user=
 while getopts ":u:" opt "$@"; do
   case $opt in
@@ -32,11 +32,11 @@ parse_repository() {
     repo=$(echo "$1" | awk -F/ '{ print $2 }' | awk -F: '{ print $1 }')
      tag=$(echo "$1" | awk -F/ '{ print $2 }' | awk -F: '{ print $2 }')
   else
-    if [ "$user_set_user" ] || [ ! -f opts.yml ] || [ -z "$($helpers_yml user)" ]; then
+    if [ "$user_set_user" ] || [ ! -f opts.yml ] || [ -z "$($helpers_yaml user)" ]; then
       current_user=$user
     else
       current_user=$(
-        $helpers_yml user
+        $helpers_yaml user
       )
     fi
 
