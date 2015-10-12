@@ -3,13 +3,13 @@
 rm -rf tags && mkdir tags
 root=$(cd "$(dirname $0)/.."; pwd)
 parent_root=$(cd "$(dirname $0)/../../.."; pwd)
-yml=$parent_root/script/yml
+yaml=$parent_root/script/yaml
 
-for v in $($yml -k tags); do
+for v in $($yaml -k tags); do
   mkdir -p tags/$v
   cp -R copy/ tags/$v/copy
   cp README.md tags/$v
 
-  erb "tag=$v" "script=$($yml scripts.$v)" "img=$($yml images.$v)" \
+  erb "tag=$v" "script=$($yaml scripts.$v)" "img=$($yaml images.$v)" \
     Dockerfile > tags/$v/Dockerfile
 done
