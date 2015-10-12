@@ -15,8 +15,8 @@ if [ "$1" ]
 fi
 
 case $to in
-      mem) exec $root/script/docker-mem;;
-  compose) exec $root/script/docker-compose;;
-    clean) exec $root/script/docker-clean;;
+      mem) exec $root/script/docker-mem "$@";;
+  compose) exec $root/script/docker-compose "$@";;
+    clean) exec $root/script/docker-clean "$@";;
         *) exec /usr/bin/docker "$to" "$@"
 esac

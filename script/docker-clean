@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-
+[ "$DEBUG" ] && set -x
 images=$(docker images --filter='dangling=true' -q --no-trunc)
 instances=$(docker     ps --filter='status=exited' -q --no-trunc)
 [ "$instances" ] && docker rm  -f $instances 2>/dev/null
