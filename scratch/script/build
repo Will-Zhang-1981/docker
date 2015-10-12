@@ -7,7 +7,7 @@ parent_root=$(cd "$(dirname "$(readlink -f $0)")/../.."; pwd)
 . $parent_root/lib/docker/helpers.sh
 repo="$(cd $root; basename "$(pwd)")"
 yaml=$parent_root/script/yaml
-[ "$DEBUG" ] && set -x
+set -x
 cd $root
 
 if [ $# -eq 1 ]; then build=$1; elif [ $# -gt 0 ]; then
