@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 gem "luna-rspec-formatters"
 gem "rake"
+gem "docker-api"
+gem "serverspec"
 gem "rspec"
 gem "pry"
