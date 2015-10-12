@@ -2,7 +2,6 @@
 # Copyright 2015 Jordon Bedwell (EnvyGeeks)
 # Taken from envygeeks/docker
 
-#!/usr/bin/env ruby
 require "json"
 require "optparse"
 require "yaml"
@@ -14,6 +13,8 @@ if ARGV[0] == "update" && ARGV.shift
 
   OptionParser.new do |o|
     o.banner = "Usage: #{__FILE__} update [opts]"
+    o.on("-a", "--array", "Create an array.") { |v| opts[:array] = true }
+    o.on("-e", "--empty", "Empty the field.") { |v| opts[:empty] = true }
     o.on("-f", "--file [FILE]", "The file to parse; default: opts.yml") do |v|
       opts[:file] = v
     end
@@ -36,8 +37,15 @@ if ARGV[0] == "update" && ARGV.shift
       hash = data
     end
 
-    if hash[keys.last].is_a?(Array) && hash[keys.last] ||= []
-      then hash[keys.last].push(
+    if opts[:empty]
+      hash[keys.last] = []  if hash[keys.last].is_a?(Array) || opts[:array]
+      hash[keys.last] = {}  if hash[keys.last].is_a?( Hash)
+      hash[keys.last] = nil unless [Array, Hash].include?( \
+        hash[keys.last].class)
+    end
+
+    if (opts[:array] && hash[keys.last] ||= []) || hash[keys.last].is_a?(Array)
+      hash[keys.last].push(
         *ARGV
       )
 
