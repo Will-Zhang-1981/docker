@@ -26,7 +26,7 @@ if [ $# -eq 1 ] && [ "$1" = "travis" ]; then
     status=$?
     docker info
     printf "\n\n\n\n"
-    tail -n 70 /var/log/upstart/docker.log
+    sudo tail -n 70 /var/log/upstart/docker.log
     exit $status
   }
 
