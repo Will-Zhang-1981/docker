@@ -7,12 +7,12 @@
 
 [ "$DEBUG" ] && set -x
 root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
-. $root/vendor/script/helpers
+. $root/lib/docker/helpers.sh
 set -e
 
 if [ $# -eq 1 ] && [ "$1" = "travis" ]; then
   $0 $DOCKER_REPO
-  
+
 elif [ $# -eq 1 ] && [ -d "dockerfiles/$1" ]; then
   cd "dockerfiles/$1"
   if [ -x script/test ]; then

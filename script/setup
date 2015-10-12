@@ -6,10 +6,10 @@
 set -e
 [ "$DEBUG" ] && set -x
 root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
-file="$root/vendor/setup/$1"
+file="$root/script/setup-$1"
 shift
 
-if [ -f "$file" ]
+if [ -x "$file" ]
   then exec "$file" "$@"
   else echo "Unknown script."
 fi

@@ -1,10 +1,10 @@
 #!/bin/sh
-
 set -e
+
 tmpdir=$(mktemp -d)
 root=$(cd "$(dirname $0)/.."; pwd)
 parent_root=$(cd "$(dirname "$(readlink -f $0)")/../.."; pwd)
-. $parent_root/vendor/script/helpers
+. $parent_root/lib/docker/helpers.sh
 repo="$(cd $root; basename "$(pwd)")"
 yaml=$parent_root/script/yaml
 [ "$DEBUG" ] && set -x
@@ -67,7 +67,7 @@ write_env() {
   echo "DEBUG=$DEBUG" >> $env_file
   echo "TRAVIS=$TRAVIS" >> $env_file
   echo "CACHE_DIR=$cache_dir" >> $env_file
-  echo "COMMON_DIR=$common_dir" >> $env_file
+  echo "COPY_DIR=$copy_dir" >> $env_file
   echo "ARCHIVE_TAR=$archive_tar" >> $env_file
   echo "COPY_REPO_DIR=$copy_repo_dir" >> $env_file
   echo "PACKAGES=$($yaml pkgs.all) $($yaml pkgs.$tag) $($yaml pkgs.$type)" >> $env_file
@@ -87,14 +87,14 @@ rootfs_dockerfile=$(rel $tmpdir)/$(rel "$(mktemp -u)")
          env_file=$(rel $tmpdir)/$(rel "$(mktemp -u)")
 
   # copy_repo: copy/$repo folder
-  # common: vendor/common (from main root)
+  # copy: $parent_root/copy (from main root)
   # archive: The tar.gz file you write to.
   # copy_type: copy/$type folder
   # copy_tag: copy/$tag folder
   # release: releases/* file
   # cache: cache/ folder.
 
-   common_dir=$(mktemp --tmpdir=$tmpdir -u)
+     copy_dir=$(mktemp --tmpdir=$tmpdir -u)
  copy_tag_dir=$(mktemp --tmpdir=$tmpdir -u)
 copy_repo_dir=$(mktemp --tmpdir=$tmpdir -u)
 copy_type_dir=$(mktemp --tmpdir=$tmpdir -u)
@@ -102,8 +102,8 @@ copy_type_dir=$(mktemp --tmpdir=$tmpdir -u)
     cache_dir=$(mktemp --tmpdir=$tmpdir -u)
 
 mkdir -p "$(rel $tmpdir)"
-cp -R $parent_root/vendor/common "$(rel $common_dir)"
-cp $parent_root/vendor/scratch/rootfs $rootfs_dockerfile
+cp -R $parent_root/copy "$(rel $copy_dir)"
+cp $parent_root/scratch/rootfs $rootfs_dockerfile
 printf "Building the temporary rootfs image %s\n" "rootfs:$repo"
 docker build -f $rootfs_dockerfile -t "rootfs:$repo" .
 rm -rf $rootfs_dockerfile
@@ -127,14 +127,14 @@ for tag in $($yaml -k tags); do
   run_yellow docker run --rm \
     --volume=$root/cache:$cache_dir \
     --volume="$root/$(rel $archive_tar):$archive_tar" \
-    --volume="$root/$(rel  $common_dir):$common_dir:ro" \
+    --volume="$root/$(rel  $copy_dir):$copy_dir:ro" \
     --volume=$root/copy/$type:$copy_type_dir:ro \
     --volume=$root/copy/$tag:$copy_tag_dir:ro \
     --volume=$root/copy/$repo:$copy_repo_dir:ro \
     --env-file=$env_file \
     -it rootfs:$repo
 
-  cp $parent_root/vendor/scratch/scratch $dockerfile
+  cp $parent_root/scratch/scratch $dockerfile
   entry=$($yaml entries.$tag)
   [ "$entry" ] || entry=$($yaml entries.$type)
   [ "$entry" ] || entry=$($yaml entries.all)

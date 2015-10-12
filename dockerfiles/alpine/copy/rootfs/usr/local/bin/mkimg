@@ -30,11 +30,11 @@ $tmp/sbin/apk.static --no-progress --keys-dir=$tmp/etc/apk/keys --root=$rootfs \
 tar xzf $tmp/alpine-base-*-r0.apk -C $rootfs etc/
 cd -> /dev/null
 
-cp -R $COMMON_DIR/* $rootfs
+cp -R $COPY_DIR/* $rootfs
 [ "$(ls -A $COPY_TYPE_DIR)" ] && cp -R $COPY_TYPE_DIR/* /
 [ "$(ls -A $COPY_TYPE_DIR)" ] && cp -R $COPY_REPO_DIR/* /
 [ "$(ls -A $COPY_TAG_DIR )" ] && cp -R  $COPY_TAG_DIR/* /
-cp -R $COMMON_DIR/* /
+cp -R $COPY_DIR/* /
 
 if [ "$TYPE" = "normal" ]; then
 	mkdir -p $rootfs/etc/startup1.d

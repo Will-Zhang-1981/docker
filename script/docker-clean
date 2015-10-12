@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+
+images=$(docker images --filter='dangling=true' -q --no-trunc)
+instances=$(docker     ps --filter='status=exited' -q --no-trunc)
+[ "$instances" ] && docker rm  -f $instances 2>/dev/null
+[ "$images"    ] && docker rmi -f $images    2>/dev/null

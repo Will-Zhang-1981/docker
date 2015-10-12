@@ -5,7 +5,7 @@
 
 [ "$DEBUG" ] && set -x
 root=$(cd "$(dirname "$(readlink -f $0)")/.."; pwd)
-. $root/vendor/script/helpers
+. $root/lib/docker/helpers.sh
 yaml=$root/script/yaml
 set -e
 

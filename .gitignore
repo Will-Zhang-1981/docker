@@ -1,9 +1,7 @@
+/.bundle
 /Gemfile.lock
-/.bundle/config
 /compose.yml
-/port.md
-/tmp
-tmp.*/
 vendor/bundle
-compose/
+tmp.*
+/data
 /.meta

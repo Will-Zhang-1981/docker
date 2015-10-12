@@ -59,11 +59,11 @@ chroot "$rootfs" sh -ec "{
 	rm -rf /tmp/remove
 }"
 
-cp -R $COMMON_DIR/* $rootfs
+cp -R $COPY_DIR/* $rootfs
 [ "$(ls -A $COPY_TYPE_DIR)" ] && cp -R $COPY_TYPE_DIR/* /
 [ "$(ls -A $COPY_REPO_DIR)" ] && cp -R $COPY_REPO_DIR/* /
 [ "$(ls -A $COPY_TAG_DIR )" ] && cp -R  $COPY_TAG_DIR/* /
-cp -R $COMMON_DIR/* /
+cp -R $COPY_DIR/* /
 
 if [ "$TYPE" = "normal" ]; then
 	mkdir -p $rootfs/etc/startup1.d

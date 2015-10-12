@@ -40,8 +40,8 @@ parse_repository() {
       )
     fi
 
-     tag=$(echo "$1" | awk -F: '{ print $2 }')
     repo=$(echo "$1" | awk -F: '{ print $1 }')
+     tag=$(echo "$1" | awk -F: '{ print $2 }')
   fi
 
 }

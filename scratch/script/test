@@ -1,0 +1,10 @@
+#!/bin/sh
+
+root=$(cd "$(dirname $0)/.."; pwd)
+parent_root=$(cd "$(dirname $0)/../../.."; pwd)
+. $parent_root/lib/docker/helpers.sh
+yaml=$parent_root/script/yaml
+
+docker run --rm --env="CI=$CI" --env="TRAVIS=$TRAVIS" -it \
+  "$user/$(basename $root):latest" \
+    docker-test prepare run
