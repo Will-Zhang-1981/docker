@@ -42,7 +42,7 @@ _trap() {
   teardown
 
   rm -rf "$(rel $tmpdir)"
-  docker rmi -f rootfs > /dev/null 2>&1 || true
+  docker rmi -f rootfs:$repo > /dev/null 2>&1 || true
   exit $status
 }
 
@@ -108,8 +108,7 @@ printf "Building the temporary rootfs image %s\n" "rootfs:$repo"
 docker build -f $rootfs_dockerfile -t "rootfs:$repo" .
 rm -rf $rootfs_dockerfile
 unset   rootfs_dockerfile
-clear_screen \
-  "rootfs:$repo"
+clear_screen "rootfs:$repo"
 
 for tag in $($yaml -k tags); do
   type=$($yaml tags.$tag)
@@ -124,6 +123,7 @@ for tag in $($yaml -k tags); do
   setup
 
   write_env
+  cat $env_file
   run_yellow docker run --rm \
     --volume=$root/cache:$cache_dir \
     --volume="$root/$(rel $archive_tar):$archive_tar" \
