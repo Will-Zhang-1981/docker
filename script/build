@@ -22,7 +22,14 @@ build() {
 }
 
 if [ $# -eq 1 ] && [ "$1" = "travis" ]; then
-  $0 $DOCKER_REPO
+  $0 $DOCKER_REPO || {
+    status=$?
+    docker info
+    printf "\n\n\n\n"
+    docker images
+    docker ps -a
+    exit $status
+  }
 
 elif [ $# -eq 1 ]; then
   parse_repository "$1" # repo part
