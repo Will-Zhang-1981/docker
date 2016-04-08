@@ -1,8 +1,5 @@
+***Repository:*** https://github.com/envygeeks/docker/tree/master/repos/prosody
 # Prosody Docker Image
-
-* [![](https://badge.imagelayers.io/envygeeks/prosody:latest.svg)][latest] `latest`
-[latest]:   https://imagelayers.io?images=envygeeks/prosody:latest
-
 ## Environment variables
 
 * `HOSTNAME`

@@ -1,8 +1,7 @@
+***Repository:*** https://github.com/envygeeks/docker/tree/master/repos/discourse
 # Discourse Docker Image
 
-EnvyGeeks Discourse Docker image is an alternate take on the Discourse
-setup allowing external databases and external routers (removal of Nginx) and
-not allowing PostgreSQL and Nginx inside of the image itself.
+EnvyGeeks Discourse Docker image is an alternate take on the Discourse setup allowing external databases and external routers (removal of Nginx) and not allowing PostgreSQL and Nginx inside of the image itself.
 
 ## Environment Variables
 
@@ -17,10 +16,7 @@ not allowing PostgreSQL and Nginx inside of the image itself.
 * `UNICORN_ENABLE_OOBGC=0`
 * `UNICORN_WORKERS=2`
 
-One might ask why everything is so low, it's because this is meant to
-be a generic image that is meant for a small site that will grow over time
-and eventually get scaled, you can send one or all of these environment
-variables and override the values to suite your needs!
+One might ask why everything is so low, it's because this is meant to be a generic image that is meant for a small site that will grow over time and eventually get scaled, you can send one or all of these environment variables and override the values to suite your needs!
 
 ## Running
 

@@ -1,8 +1,5 @@
+***Repository:*** https://github.com/envygeeks/docker/tree/master/repos/ghost
 # Ghost Docker Image
-
-* [![](https://badge.imagelayers.io/envygeeks/ghost:latest.svg)][latest] `latest`
-[latest]: https://imagelayers.io?images=envygeeks/ghost:latest
-
 ## Usage
 
 ```
