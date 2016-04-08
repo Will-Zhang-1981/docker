@@ -1,0 +1,7 @@
+push: true
+log_filters:
+  - !ruby/regexp /^\(reading database \.{3}/i
+  - !ruby/regexp /^moving old data out of the way/i
+  - !ruby/regexp /^preparing to unpack/i
+  - !ruby/regexp /^unpacking /i
+tty: true

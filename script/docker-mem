@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-set -e
-[ "$DEBUG" ] && set -x
-for d in `docker ps --no-trunc -q | grep -v 'CONTAINER(\s|_)ID'`; do
-  echo -n "$(docker ps | awk "/^${d:0:12}/{ print \$NF }"): "
-  echo "$(cat /sys/fs/cgroup/memory/docker/$d/memory.max_usage_in_bytes | \
-    awk '{ mb = $1/1024/1024; print mb "MB" }')"
-done

@@ -1,0 +1,76 @@
+stable: &stable 1.5.1
+beta_tag: &beta_tag 1.6.0.beta1
+beta: &beta 1.6.0
+
+#
+
+versions:
+  group:
+    beta: *beta_tag
+    stable: *stable
+
+#
+
+tags:
+  *stable: stable
+  *beta: beta
+
+#
+
+aliases:
+  beta: *beta
+  latest: *stable
+  stable: *stable
+
+#
+
+volumes:
+  - /opt/discourse/public/assets
+  - /opt/discourse/public/javascripts
+  - /opt/discourse/public/uploads
+  - /opt/discourse/public/images
+
+#
+
+development_packages:
+  all:
+    - libffi-dev
+    - libssl-dev
+    - libyaml-dev
+    - libreadline6-dev
+    - build-essential
+    - libxslt1-dev
+    - libxml2-dev
+    - libpq-dev
+    - ruby-dev
+
+#
+
+packages:
+  all:
+    - libxml2
+    - libyaml-0-2
+    - imagemagick
+    - libreadline6
+    - libjpeg-turbo-progs
+    - ghostscript
+    - libxslt1.1
+    - gifsicle
+    - jhead
+    - ruby
+    - git
+
+#
+
+env:
+  all:
+    RAILS_ENV: production
+    UNICORN_SIDEKIQS: 1
+    DISCOURSE_DB_PORT: 5432
+    DISCOURSE_DB_USER: discourse
+    DISCOURSE_DB_HOST: postgresql
+    DISCOURSE_DB_NAME: discourse
+    DISCOURSE_REDIS_HOST: redis
+    DISCOURSE_REDIS_PORT: 6379
+    UNICORN_ENABLE_OOBGC: 0
+    UNICORN_WORKERS: 2

@@ -1,0 +1,21 @@
+tags:
+  latest: normal
+
+#
+
+packages:
+  all:
+    - postfix
+    - bsd-mailx
+    - dovecot-core
+    - dovecot-imapd
+    - dovecot-lmtpd
+    - dovecot-pgsql
+    - dovecot-sieve
+    - postfix-pgsql
+    - postgresql-client-9.5
+    - opendkim-tools
+    - opendkim
+    - postgrey
+    - rsyslog
+    - telnet

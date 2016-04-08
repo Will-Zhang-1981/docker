@@ -1,0 +1,39 @@
+rootfs_template: alpine
+type: scratch
+
+#
+
+tags:
+  3.3: normal
+  3.2: normal
+
+#
+
+aliases:
+  latest: 3.3
+
+#
+
+packages:
+  all:
+    - sudo
+    - ca-certificates
+    - tzdata
+    - bash
+
+  group:
+    normal:
+      - runit@testing
+
+#
+
+releases:
+  tag:
+    3.3: 3.3
+    3.2: 3.2
+
+#
+
+entries:
+  group:
+    normal: /usr/local/bin/startup

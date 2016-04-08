@@ -1,0 +1,17 @@
+stable_version: &stable 0.7.8
+
+#
+
+versions:
+  tag:
+    *stable: *stable
+
+#
+
+tags:
+  *stable: normal
+
+#
+
+aliases:
+  latest: *stable
