@@ -1,7 +1,7 @@
 /.bundle
 /Gemfile.lock
 /compose.yml
-vendor
+/vendor
 tmp.*
 /data
 /.meta
