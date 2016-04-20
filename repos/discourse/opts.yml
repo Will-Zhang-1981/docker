@@ -1,26 +1,32 @@
-stable: &stable 1.5.1
+beta_version: &beta_version 1.6.0
+beta_minor_version: &beta_minor_version "1.6"
+stable_major_version: &stable_major_version "1"
+stable_minor_version: &stable_minor_version "1.5"
+stable_version: &stable_version "1.5.1"
 beta_tag: &beta_tag 1.6.0.beta1
-beta: &beta 1.6.0
 
 #
 
 versions:
   group:
     beta: *beta_tag
-    stable: *stable
+    stable: *stable_version
 
 #
 
 tags:
-  *stable: stable
-  *beta: beta
+  *stable_version: stable
+  *beta_version: beta
 
 #
 
 aliases:
-  beta: *beta
-  latest: *stable
-  stable: *stable
+  beta: *beta_version
+  latest: *stable_version
+  stable: *stable_version
+  *stable_major_version: *stable_version
+  *stable_minor_version: *stable_version
+  *beta_minor_version: *beta_version
 
 #
 
