@@ -59,6 +59,7 @@ packages:
     - jhead
     - ruby
     - git
+    - postgresql-client-9.3 # Discourse backups require pg_dump
 
 #
 
