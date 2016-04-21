@@ -5,6 +5,10 @@ stable_minor_version: &stable_minor_version "1.5"
 stable_version: &stable_version "1.5.1"
 beta_tag: &beta_tag 1.6.0.beta1
 
+gems:
+  all:
+    - image_optim_pack
+
 #
 
 versions:
