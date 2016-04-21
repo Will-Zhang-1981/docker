@@ -19,7 +19,9 @@ RUN \
   rm -rf .git && \
   cd /opt/discourse && \
   export FORCE_BUNDLE=true && \
-  export BUNDLE_ARGS="-j128 --without=development:test" && \
+  mkdir -p /usr/share/ruby && \
+  echo "<%= @metadata.gems %>" > /usr/share/ruby/default-gems && \
+  export BUNDLE_ARGS="-j128 --without=development:test --enable-shared" && \
   docker-helper install-users-gems && \
 
   echo libxml2     hold | dpkg --set-selections && \
