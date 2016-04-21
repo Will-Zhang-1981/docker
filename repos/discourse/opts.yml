@@ -63,13 +63,13 @@ packages:
     - imagemagick
     - libreadline6
     - libjpeg-turbo-progs
+    - postgresql-client
     - ghostscript
     - libxslt1.1
     - gifsicle
     - jhead
     - ruby
     - git
-    - postgresql-client-9.3 # Discourse backups require pg_dump
 
 #
 
