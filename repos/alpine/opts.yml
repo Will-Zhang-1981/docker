@@ -1,6 +1,5 @@
 rootfs_template: alpine
 type: scratch
-hello: world
 
 #
 
@@ -12,6 +11,7 @@ tags:
 
 aliases:
   latest: 3.3
+  3: 3.3
 
 #
 

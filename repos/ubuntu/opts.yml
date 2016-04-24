@@ -40,6 +40,9 @@ aliases:
   xenial: "16.04"
   latest: "16.04"
   lts:    "14.04"
+  16:     "16.04"
+  15:     "15.10"
+  14:     "14.04"
 
 entries:
   all: /usr/local/bin/startup
