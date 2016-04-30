@@ -6,7 +6,9 @@ ruby_depend_repo() {
   repo=$(echo "$1" | awk -F, '{
     printf $2;
     for (i = 3; i <= NF; i++) {
-      if ($i != "") { printf ","$i; }
+      if ($i != "") {
+        printf ","$i;
+      }
     }
   }')
 
@@ -243,12 +245,7 @@ install_users_gems() {
           else echo "$BUNDLE_ARGS" | xargs -n1 | xargs -- bundle install --path \
             ${BUNDLE_CACHE_PATH:-"vendor/bundle"} && break
         fi
-
-        >&2 printf "You are forcing bundler, using a cache or git gems.\n"
-        >&2 printf "You might need to add default system gems to your Gemfile.\n"
-        >&2 printf "You can get them with: gem list.\n"
       else
-        # For partial Gemfiles.
         gem install -g Gemfile && break
       fi
     done
