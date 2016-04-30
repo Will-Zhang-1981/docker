@@ -21,7 +21,7 @@ RUN \
   export FORCE_BUNDLE=true && \
   mkdir -p /usr/share/ruby && \
   echo "<%= @meta.gems %>" > /usr/share/ruby/default-gems && \
-  export BUNDLE_ARGS="-j128 --without=development:test --enable-shared" && \
+  export BUNDLE_ARGS="-j 128 --without=development:test" && \
   docker-helper install-users-gems && \
 
   echo libxml2     hold | dpkg --set-selections && \
