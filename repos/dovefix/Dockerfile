@@ -3,7 +3,7 @@ MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
 ENV PG_HOSTNAME=postgresql PG_USERNAME=dovefix PG_DATABASE=dovefix
 RUN \
   apt-get update && \
-  apt-get install --no-install-recommends -y <%= @metadata.packages %> && \
+  apt-get install --no-install-recommends -y <%= @meta.packages %> && \
   docker-helper reset-users postfix:603 postdrop:604 dovecot:605 \
     dovenull:606 opendkim:607 postgrey:619 && \
 

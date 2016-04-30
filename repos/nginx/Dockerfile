@@ -1,8 +1,8 @@
-FROM <%= @metadata.image %>
+FROM <%= @meta.image %>
 MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
 RUN \
-  <%= @metadata.script %> && \
-  <% if @metadata.tag == "ubuntu" %>
+  <%= @meta.script %> && \
+  <% if @meta.tag == "ubuntu" %>
     usermod  -l nginx www-data && \
     groupmod -n nginx www-data && \
   <% end %>

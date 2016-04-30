@@ -5,7 +5,7 @@ RUN \
     build-base openssl-dev zlib-dev libuv-dev linux-headers wget git && \
 
   mkdir -p /usr/src && cd /usr/src && \
-  wget -nv https://ghost.org/zip/ghost-<%= @metadata.version %>.zip -O ghost.zip && \
+  wget -nv https://ghost.org/zip/ghost-<%= @meta.version %>.zip -O ghost.zip && \
   mkdir /usr/local/lib/ghost &&  \
   unzip ghost.zip -d /usr/local/lib/ghost && \
 

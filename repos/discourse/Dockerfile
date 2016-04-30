@@ -1,10 +1,10 @@
 FROM envygeeks/ubuntu
 MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
-ENV <%= @metadata.env %>
+ENV <%= @meta.env %>
 RUN \
   apt-get update && \
-  apt-get install --no-install-recommends -y <%= @metadata.packages %> && \
-  apt-get install --no-install-recommends -y <%= @metadata.development_packages %> && \
+  apt-get install --no-install-recommends -y <%= @meta.packages %> && \
+  apt-get install --no-install-recommends -y <%= @meta.development_packages %> && \
   gem install bundler --no-document && \
 
   groupadd -rg 620 discourse && \
@@ -13,14 +13,14 @@ RUN \
   docker-helper create-dir discourse:discourse /home/discourse && \
 
   cd /opt/discourse && \
-  git clone --single-branch --branch v<%= @metadata.version %> \
+  git clone --single-branch --branch v<%= @meta.version %> \
     https://github.com/discourse/discourse.git . && \
 
   rm -rf .git && \
   cd /opt/discourse && \
   export FORCE_BUNDLE=true && \
   mkdir -p /usr/share/ruby && \
-  echo "<%= @metadata.gems %>" > /usr/share/ruby/default-gems && \
+  echo "<%= @meta.gems %>" > /usr/share/ruby/default-gems && \
   export BUNDLE_ARGS="-j128 --without=development:test --enable-shared" && \
   docker-helper install-users-gems && \
 
@@ -33,7 +33,7 @@ RUN \
   echo git         hold | dpkg --set-selections && \
 
   docker-helper enable-stdout-logger && \
-  docker-helper apt-clean <%= @metadata.development_packages %> && \
+  docker-helper apt-clean <%= @meta.development_packages %> && \
   docker-helper cleanup && \
 
   chown -R discourse:discourse /opt/discourse && \
@@ -42,5 +42,5 @@ RUN \
   done
 
 COPY copy /
-VOLUME <%= @metadata.volumes %>
+VOLUME <%= @meta.volumes %>
 EXPOSE 3000
