@@ -1,6 +1,5 @@
 #!/bin/sh
 echo "Installing test depends."
-[ -z "$DEBUG" ] && exec 1>/dev/null
 set -e
 
 if which apk > /dev/null; then

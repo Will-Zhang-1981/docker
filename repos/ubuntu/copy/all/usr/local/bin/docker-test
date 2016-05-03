@@ -2,7 +2,7 @@
 [ "$DEBUG" ] && set -x
 set -e
 
-tput clear || true
+tput clear 2>/dev/null || true
 for v in "$@"; do
   file="/usr/local/share/docker/test/$v"
   if [ -f "$file" ]; then
