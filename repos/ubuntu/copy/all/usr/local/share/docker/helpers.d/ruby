@@ -255,7 +255,8 @@ install_users_gems() {
 # ----------------------------------------------------------------------------
 
 should_bundle_install() {
-  if has_git_gemfile || [ -n "$BUNDLE_CACHE" ] || [ -n "$FORCE_BUNDLE" ] || [ -n "$BUNDLE_ARGS"]
+  if has_git_gemfile || [ -n "$BUNDLE_CACHE" ] || [ -n "$FORCE_BUNDLE" ] \
+      || [ -n "$BUNDLE_ARGS"] || [ -n "$BUNDLE_FORCE" ]
     then return 0
     else return 1
   fi
