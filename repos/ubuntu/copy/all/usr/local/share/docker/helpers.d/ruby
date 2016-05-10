@@ -238,18 +238,29 @@ install_users_gems() {
 
       if should_bundle_install; then
         if [ -z "$BUNDLE_CACHE" ]
-          then echo "$BUNDLE_ARGS" | xargs -n1 | xargs -- bundle install && break
+          then echo "$BUNDLE_ARGS" | xargs -n1 | xargs -- bundle install | silence_bundler && break
           else echo "$BUNDLE_ARGS" | xargs -n1 | xargs -- bundle install --path \
-            ${BUNDLE_CACHE_PATH:-"vendor/bundle"} && break
+            ${BUNDLE_CACHE_PATH:-"vendor/bundle"} | silence_bundler && break
         fi
       else
-        gem install -g Gemfile && break
+        gem install -g Gemfile | silence_bundler && break
       fi
     done
   fi
 }
 
-# ----------------------------------------------------------------------------
+#--
+# @return 1 | 0
+# Silences bundler conditionally.
+# @echo "$@"
+# --
+silence_bundler() {
+  if [ -n "$SILENCE_BUNDLER" ]
+    then "$@" > /dev/null; else "$@"
+  fi
+}
+
+#--
 
 should_bundle_install() {
   if has_git_gemfile || [ -n "$BUNDLE_CACHE" ] || [ -n "$FORCE_BUNDLE" ] \
