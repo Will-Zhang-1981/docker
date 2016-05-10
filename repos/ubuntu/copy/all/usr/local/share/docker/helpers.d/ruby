@@ -235,28 +235,20 @@ install_users_gems() {
   if [ -f Gemfile ]; then
     for i in 1 2 3; do
       ___ruby_scream_fatality_or_install $i
+      if [ -n "$SILENCE_BUNDLER" ]; then
+        exec >/dev/null
+      fi
 
       if should_bundle_install; then
         if [ -z "$BUNDLE_CACHE" ]
-          then echo "$BUNDLE_ARGS" | xargs -n1 | xargs -- bundle install | silence_bundler && break
+          then echo "$BUNDLE_ARGS" | xargs -n1 | xargs -- bundle install && break
           else echo "$BUNDLE_ARGS" | xargs -n1 | xargs -- bundle install --path \
-            ${BUNDLE_CACHE_PATH:-"vendor/bundle"} | silence_bundler && break
+            ${BUNDLE_CACHE_PATH:-"vendor/bundle"} && break
         fi
       else
-        gem install -g Gemfile | silence_bundler && break
+        gem install -g Gemfile && break
       fi
     done
-  fi
-}
-
-#--
-# @return 1 | 0
-# Silences bundler conditionally.
-# @echo "$@"
-# --
-silence_bundler() {
-  if [ -n "$SILENCE_BUNDLER" ]
-    then "$@" > /dev/null; else "$@"
   fi
 }
 
