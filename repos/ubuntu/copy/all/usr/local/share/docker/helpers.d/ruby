@@ -23,7 +23,7 @@ ruby_depend_repo() {
   return 0
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 ruby_depend_gem() {
   gem_version=$(echo "$1" | awk -F, '{ print $1 }' | awk -F@ '{ print $2 }')
@@ -32,7 +32,7 @@ ruby_depend_gem() {
   return 0
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 add_gemfile_dependency() {
   ruby_depend_repo "$1"
@@ -91,7 +91,7 @@ add_gemfile_dependency() {
   fi
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 ruby_install_gem() {
   ruby_depend_repo "$1"
@@ -129,13 +129,12 @@ ruby_install_gem() {
   fi
 }
 
-# ----------------------------------------------------------------------------
+#--
 # gem@version,https://github.com:envygeeks/repo.git@branch
 # gem@version,git://github.com:envygeeks/repo.git@branch
 # gem@version,user/repo@branch
 # gem@version
-# ----------------------------------------------------------------------------
-
+#--
 git_clone_ruby_repo() {
   ruby_depend_repo "$1"
   ruby_depend_gem  "$1"
@@ -152,7 +151,7 @@ git_clone_ruby_repo() {
   echo $temp
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 has_previous_gemfile() {
   if [ -d vendor/ ] && [ "$(find vendor/ -type f -name Gemfile.old.\*)" ]
@@ -161,7 +160,7 @@ has_previous_gemfile() {
   fi
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 backup_gemfile() {
   if [ -f Gemfile ]; then
@@ -170,7 +169,7 @@ backup_gemfile() {
   fi
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 copy_default_gems_to_gemfile() {
   if [ -f Gemfile ] && [ -f /usr/share/ruby/default-gems ]; then
@@ -186,7 +185,7 @@ copy_default_gems_to_gemfile() {
   fi
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 install_default_gems() {
   if [ -f /usr/share/ruby/default-gems ]; then
@@ -201,7 +200,7 @@ install_default_gems() {
   return 0
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 configure_nokogiri() {
   bundle config build.nokogiri  "--use-system-libraries=true --with-xml2-include=/usr/include/libxml2"
@@ -209,12 +208,11 @@ configure_nokogiri() {
   return 0
 }
 
-# ----------------------------------------------------------------------------
+#--
 # Triggers an install or exists if one was already ran.
 # @echo On Error
 # @return 1 | 0
-# ----------------------------------------------------------------------------
-
+#--
 ___ruby_scream_fatality_or_install() {
   if [ $1 -gt 2 ] && user_pkgs_installed; then
     >&2 echo "There was an install error."
@@ -227,12 +225,11 @@ ___ruby_scream_fatality_or_install() {
   return 0
 }
 
-# ----------------------------------------------------------------------------
+#--
 # Installs gems from a users gemfile w/ safety.
 # @echo Nothing
 # @return 1 | 0
-# ----------------------------------------------------------------------------
-
+#--
 install_users_gems() {
   configure_nokogiri
   if [ -f Gemfile ]; then
@@ -262,13 +259,13 @@ should_bundle_install() {
   fi
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 will_bundle_install() {
   should_bundle_install
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 __bundle_cmd() {
   # Where "$1" is the command you are looking for in the rest of arguments.
@@ -276,14 +273,14 @@ __bundle_cmd() {
     "$@"
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 is_bundle_cmd() {
   ! __bundle_cmd "update" "$@" && ! __bundle_cmd "install" "$@" \
     && ! __bundle_cmd "clean" "$@"
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 has_git_gemfile() {
   [ ! -f Gemfile ] && return 0
@@ -291,14 +288,14 @@ has_git_gemfile() {
     Gemfile
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 make_gemfile_uniq() {
   awk '/^[ ]*end$/ || /^[ ]*group[ ]+/ || !NF || !_[$0]++' Gemfile > Gemfile.new
   mv  Gemfile.new Gemfile
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 install_ruby_depends() {
   if [ -z "$SKIP_RUBY_DEPENDS" ]; then
@@ -313,7 +310,7 @@ install_ruby_depends() {
   fi
 }
 
-# ----------------------------------------------------------------------------
+#--
 
 uninstall_ruby_depends() {
   if [ -z "$KEEP_RUBY_DEPENDS" ] && [ -z "$SKIP_RUBY_DEPENDS" ]; then
