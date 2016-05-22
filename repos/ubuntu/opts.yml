@@ -23,26 +23,19 @@ package_cleanup:
 releases:
   tag:
     "14.04": trusty
-    "15.04": vivid
-    "15.10": wily
     "16.04": xenial
 
 tags:
   "14.04": lts
-  "15.04": normal
-  "15.10": normal
   "16.04": lts
 
 aliases:
-  wily:   "15.10"
-  vivid:  "15.04"
+  14:     "14.04"
   trusty: "14.04"
   xenial: "16.04"
   latest: "16.04"
-  lts:    "14.04"
+  lts:    "16.04"
   16:     "16.04"
-  15:     "15.10"
-  14:     "14.04"
 
 entries:
   all: /usr/local/bin/startup
