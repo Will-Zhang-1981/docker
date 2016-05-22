@@ -32,6 +32,7 @@ RUN \
   docker-helper apt-clean <%= @meta.development_packages %> && \
   docker-helper cleanup && \
 
+  ln -sf /opt/discourse/log/production.log /etc/stdout.d/production.log && \
   ln -sf /opt/discourse/log/unicorn.stderr.log /etc/stdout.d/unicorn.stderr.log && \
   ln -sf /opt/discourse/log/unicorn.stdout.log /etc/stdout.d/unicorn.stdout.log && \
   chown -R discourse:discourse /opt/discourse
