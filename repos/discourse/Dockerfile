@@ -24,6 +24,10 @@ RUN \
   export BUNDLE_ARGS="-j 128 --without=development:test" && \
   docker-helper install-users-gems && \
 
+  <% @meta["keeps"].to_a.each do |keep| %>
+    echo <%= keep %> hold | dpkg --set-selections && \
+  <% end %>
+
   docker-helper enable-stdout-logger && \
   docker-helper apt-clean <%= @meta.development_packages %> && \
   docker-helper cleanup && \

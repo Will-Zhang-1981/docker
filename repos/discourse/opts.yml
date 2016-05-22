@@ -78,6 +78,15 @@ nodejs_packages:
 
 #
 
+keeps:
+  all:
+    - libpq5
+    - libssl1.0.0
+    - libxslt1.1
+    - libxml2
+
+#
+
 env:
   all:
     RAILS_ENV: production
