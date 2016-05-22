@@ -5,10 +5,6 @@ stable_minor_version: &stable_minor_version "1.5"
 stable_version: &stable_version "1.5.2"
 beta_tag: &beta_tag 1.6.0.beta5
 
-gems:
-  all:
-    - image_optim_pack
-
 #
 
 versions:
@@ -59,17 +55,26 @@ development_packages:
 packages:
   all:
     - libxml2
+    - optipng
     - libyaml-0-2
     - imagemagick
     - libreadline6
     - libjpeg-turbo-progs
     - postgresql-client
+    - nodejs-legacy
     - ghostscript
     - libxslt1.1
+    - jpegoptim
     - gifsicle
+    - nodejs
     - jhead
     - ruby
     - git
+    - npm
+
+nodejs_packages:
+  all:
+    - svgo
 
 #
 
