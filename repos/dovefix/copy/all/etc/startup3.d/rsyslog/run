@@ -1,4 +1,0 @@
-#!/bin/sh
-set -e
-exec rsyslogd -f \
-  /etc/rsyslog.conf -n

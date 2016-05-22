@@ -1,7 +1,0 @@
-#!/bin/sh
-set -e
-
-pid=$(cat /etc/startup3.d/dkim/supervise/daemon)
-if [ "$pid" ] && kill -0 $pid; then
-  kill $pid
-fi

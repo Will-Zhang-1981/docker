@@ -1,6 +1,0 @@
-#!/bin/sh
-
-for v in /usr/share/dovefix/postgres/*.sql; do
-  timeout --preserve-status 60 psql -h $PG_HOSTNAME -U $PG_USERNAME -d $PG_DATABASE \
-    -f $v || true
-done
