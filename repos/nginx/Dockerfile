@@ -12,6 +12,7 @@ RUN \
   docker-helper enable_stdout_logger && \
   ln -sf /var/log/nginx/error.log  /etc/stdout.d/error.log  && \
   ln -sf /var/log/nginx/access.log /etc/stdout.d/access.log && \
+  chown -R nginx.nginx /var/lib/nginx && \
   rm -rf /etc/nginx && \
   docker-helper cleanup
 COPY copy /
