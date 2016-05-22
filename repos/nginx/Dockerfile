@@ -1,7 +1,7 @@
-FROM <%= @meta.image %>
+FROM envygeeks/alpine:<%= @meta.release %>
 MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
 RUN \
-  <%= @meta.script %> && \
+  apk --update add <%= @meta.packages %> && \
   <% if @meta.tag == "ubuntu" %>usermod -l nginx www-data && groupmod -n nginx www-data && \<% end %>
   sed -ri 's!/var/www/localhost/htdocs!/srv/nginx!' /etc/passwd && \
   sed -ri 's!:Linux User,{3}:!:nginx:!' /etc/passwd && \

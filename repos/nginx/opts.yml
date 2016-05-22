@@ -1,23 +1,23 @@
-images:
+release:
   tag:
-    alpine: envygeeks/alpine:latest
-    ubuntu: envygeeks/ubuntu:lts
-
+    "1.9":  3.3
+    "1.10": 3.4
 #
 
 tags:
-  alpine: normal
-  ubuntu: normal
+  "1.9":  normal
+  "1.10": normal
 
 #
 
 aliases:
-  latest: alpine
+  latest: "1.10"
+  1: "1.10"
 
 #
 
-scripts:
-  tag:
-    alpine: apk --update add nginx-lua lua-socket
-    ubuntu: apt-get update && apt-get install --no-install-recommends
-      -y nginx-extras lua-socket
+packages:
+  all:
+    - nginx-lua
+    - lua5.1-socket
+    - lua-socket
