@@ -1,4 +1,4 @@
-FROM envygeeks/alpine
+FROM envygeeks/alpine:<%= @meta.release %>
 MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
 RUN \
   apk --update add postgresql postgresql-contrib && \

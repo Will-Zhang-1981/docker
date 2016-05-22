@@ -1,2 +1,20 @@
 tags:
   latest: normal
+
+#
+
+tags:
+  9.4: normal
+  9.5: normal
+
+#
+
+aliases:
+  latest: 9.5
+
+#
+
+release:
+  tag:
+    9.4: 3.3
+    9.5: 3.4
