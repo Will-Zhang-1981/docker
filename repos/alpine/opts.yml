@@ -4,14 +4,15 @@ type: scratch
 #
 
 tags:
+  3.4: normal
   3.3: normal
   3.2: normal
 
 #
 
 aliases:
-  latest: 3.3
-  3: 3.3
+  latest: 3.4
+  3: 3.4
 
 #
 
@@ -30,6 +31,7 @@ packages:
 
 releases:
   tag:
+    3.4: 3.4
     3.3: 3.3
     3.2: 3.2
 
