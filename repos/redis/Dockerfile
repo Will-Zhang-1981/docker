@@ -5,7 +5,7 @@ RUN \
   rm -rf /etc/redis /etc/redis.conf \
     /srv/redis && \
 
-  docker-helper reset_users redis:615 && \
+  docker-helper reset_users redis:1000 && \
   docker-helper create_dir redis:redis /srv/redis && \
   docker-helper cleanup && \
 

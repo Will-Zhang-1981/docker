@@ -7,8 +7,8 @@ RUN \
   apt-get install --no-install-recommends -y <%= @meta.development_packages %> && \
   gem install bundler --no-document && \
 
-  groupadd -rg 620 discourse && \
-  useradd  -u  620 -g 620 -rMd /home/discourse discourse && \
+  groupadd -rg 1000 discourse && \
+  useradd  -u  1000 -g 1000 -rMd /home/discourse discourse && \
   docker-helper create-dir discourse:discourse /opt/discourse  && \
   docker-helper create-dir discourse:discourse /home/discourse && \
 

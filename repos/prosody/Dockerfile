@@ -2,7 +2,7 @@ FROM envygeeks/alpine
 MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
 RUN \
   apk --update add prosody@testing lua-zlib@testing lua-event@testing lua-sec lua && \
-  docker-helper reset_user prosody:622 && \
+  docker-helper reset_user prosody:1000 && \
   docker-helper create_dir prosody:prosody /run/prosody && \
   docker-helper enable_stdout_logger && \
 

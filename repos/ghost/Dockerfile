@@ -9,8 +9,8 @@ RUN \
   mkdir /usr/local/lib/ghost &&  \
   unzip ghost.zip -d /usr/local/lib/ghost && \
 
-  addgroup -Sg 634 ghost && \
-  adduser  -SG ghost -u 634 -h /home/ghost ghost && \
+  addgroup -Sg 1000 ghost && \
+  adduser  -SG ghost -u 1000 -h /home/ghost ghost && \
   docker-helper create_dir ghost:ghost /home/ghost && \
   docker-helper create_dir ghost:ghost  /srv/ghost && \
 

@@ -2,7 +2,7 @@ FROM envygeeks/alpine
 MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
 RUN \
   apk --update add postgresql postgresql-contrib && \
-  docker-helper reset_users postgres:614 && \
+  docker-helper reset_users postgres:1000 && \
 
   rm -rf /srv/postgresql /etc/postgresql /etc/postgresql.conf && \
   mkdir -p /srv/postgresql /run/postgresql && \
