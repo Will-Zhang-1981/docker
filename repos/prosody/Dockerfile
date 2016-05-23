@@ -14,5 +14,5 @@ RUN \
     /etc/prosody/conf.avail/localhost.cf.lua
 
 COPY copy /
-EXPOSE 5222 5269
 VOLUME /var/lib/prosody
+EXPOSE 5222 5269
