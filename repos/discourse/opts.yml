@@ -30,14 +30,6 @@ aliases:
 
 #
 
-volumes:
-  - /opt/discourse/public/assets
-  - /opt/discourse/public/javascripts
-  - /opt/discourse/public/uploads
-  - /opt/discourse/public/images
-
-#
-
 development_packages:
   all:
     - libffi-dev

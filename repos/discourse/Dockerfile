@@ -38,5 +38,5 @@ RUN \
   chown -R discourse:discourse /opt/discourse
 
 COPY copy /
-VOLUME <%= @meta.volumes %>
+VOLUME /opt/discourse/public/uploads
 EXPOSE 3000
