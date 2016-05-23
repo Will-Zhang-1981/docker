@@ -13,4 +13,8 @@ RUN \
   rm -rf /etc/nginx && \
   docker-helper cleanup
 COPY copy /
+VOLUME /srv/nginx
+VOLUME /etc/nginx/site.d
+VOLUME /etc/nginx/include.d
+VOLUME /etc/nginx/conf.d
 EXPOSE 80 443
