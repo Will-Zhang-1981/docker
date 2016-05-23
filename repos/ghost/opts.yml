@@ -1,11 +1,12 @@
 stable_version: &stable 0.7.8
+stable_minor_version: &stable_minor_version 0.7
+stable_major_version: &stable_major_version 7
 
 #
 
 versions:
   tag:
     *stable: *stable
-
 #
 
 tags:
@@ -15,3 +16,5 @@ tags:
 
 aliases:
   latest: *stable
+  *stable_minor_version: *stable
+  *stable_major_version: *stable
