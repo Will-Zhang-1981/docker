@@ -10,4 +10,5 @@ RUN \
   ln -s /var/log/minidlna.log /etc/stdout.d/minidlna.log && \
   chown minidlna:minidlna /srv/minidlna /run/minidlna && \
   docker-helper cleanup
+VOLUME /srv/minidlna
 EXPOSE 1900/udp 8200
