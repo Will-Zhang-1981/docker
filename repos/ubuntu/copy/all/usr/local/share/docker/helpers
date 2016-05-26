@@ -74,23 +74,16 @@ add_system_users() {
 
     #
 
-    if ! group_exists "$gid"
-      then if [ "$(os)" = ubuntu ]
-        then addgroup --gid "$gid" "$canonical"
-        else addgroup -g "$gid" \
-                "$canonical"
-      fi
-    fi
-
-    #
-
     if [ "$(os)" = ubuntu ]; then
-      adduser --gid "$gid" --uid "$uid" \
-          --system "$canonical"
+      addgroup --gid "$gid" "$canonical"
+      adduser  --gid "$gid" --uid "$uid" --shell /bin/bash \
+        --system "$canonical"
 
-      else
-        adduser -g "$gid" -u "$uid" \
-            "$canonical"
+    else
+      addgroup -g "$gid" "$canonical"
+      adduser  -s /bin/bash -G "$canonical" -u "$uid" -D "$canonical"
+      sed -ri "s!:Linux User,{3}:!:linux-user:!" /etc/passwd
+      mkdir -p "/home/$canonical"
     fi
   done
 }
