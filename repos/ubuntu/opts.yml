@@ -1,13 +1,25 @@
 rootfs_template: ubuntu
 type: scratch
-
+tags:
+  "14.04": lts
+  "15.10": release
+  "16.04": lts
+aliases:
+  trusty: "14.04"
+  wily: "15.10"
+  xenial: "16.04"
+  latest: "16.04"
+releases:
+  tag:
+    "14.04": trusty
+    "15.10": wily
+    "16.04": xenial
 packages:
   all:
     - sudo
     - ca-certificates
     - tzdata
     - runit
-
 package_cleanup:
   all:
     - nano
@@ -19,23 +31,5 @@ package_cleanup:
     - rsyslog
     - eject
     - ed
-
-releases:
-  tag:
-    "14.04": trusty
-    "16.04": xenial
-
-tags:
-  "14.04": lts
-  "16.04": lts
-
-aliases:
-  14:     "14.04"
-  trusty: "14.04"
-  xenial: "16.04"
-  latest: "16.04"
-  lts:    "16.04"
-  16:     "16.04"
-
 entries:
   all: /usr/local/bin/startup
