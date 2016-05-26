@@ -2,7 +2,8 @@
 set -e
 
 if [ -z "$DISCOURSE_SMTP_ADDRESS" ] || [ -z "$DISCOURSE_DEVELOPER_EMAILS" ]; then
-  echo "You have not setup SMTP or Developer Emails, please set them up."
+  echo "You have not set DISCOURSE_SMTP_ADDRESS or the DISCOURSE_DEVELOPER_EMAILS, please set them."
+  echo "Bye and best of luck."
   exit 1
 fi
 
