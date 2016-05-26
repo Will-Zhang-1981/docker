@@ -2,32 +2,37 @@
 [ "$DEBUG" ] && set -x
 set -e
 
-# ----------------------------------------------------------------------------
-# Searches for `.apt` and installs.
+# --
 # @echo Nothing
+# Searches for `.apt` and installs.
 # @return 0
-# ----------------------------------------------------------------------------
-
+# --
 install_from_apt_file() {
   if [ "$1" = "apt" ] || [ -f ".apt" ]; then
     sudo touch /etc/apt/ran-user-install
+
     sudo apt-get update
-    sudo apt-get install --no-install-recommends \
-      -y "$(cat .apt)"
+    sudo apt-get install --no-install-recommends -y "$(cat .apt)"
     cleanup
   fi
+
+  return 0
 }
 
-# ----------------------------------------------------------------------------
-
+# --
+# @echo Nothing
+# Cleans up Debian with Deborphan.
+# @return 0
+# --
 apt_clean() {
-  sudo apt-get install deborphan --no-install-recommends -y
+  sudo apt-get install --no-install-recommends --assume-yes deborphan
   until [ -z "$(deborphan --guess-all)" ]; do
     sudo apt-get autoremove --purge -y "$@" $(
       deborphan --guess-all
     )
   done
 
-  sudo apt-get autoremove --purge -y \
-    deborphan
+  # Don't leave our depedencies lying around.
+  sudo apt-get autoremove --purge --assume-yes deborphan
+  return 0
 }

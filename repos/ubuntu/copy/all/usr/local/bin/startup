@@ -47,9 +47,11 @@ trap '{
   exit $status
 }' EXIT QUIT TERM INT
 
-runsvdir -P /etc/startup2.d &
-runsvdir -P /etc/startup3.d &
-wait_pid=$!
+if [ -z "$SKIP_STARTUP" ]; then
+  runsvdir -P /etc/startup2.d &
+  runsvdir -P /etc/startup3.d &
+  wait_pid=$!
+fi
 
 if [ "$user_context" ]; then
   touch /etc/user-context
@@ -57,11 +59,18 @@ if [ "$user_context" ]; then
   "$@"
   exit $?
 else
-  if [ -x /usr/bin/default ] || [ -x /usr/local/bin/default ]; then
-    default &
-    wait_pid=$!
-  fi
+  if [ -z "$SKIP_STARTUP" ]; then
+    if [ -x /usr/bin/default ] || [ -x /usr/local/bin/default ]; then
+      default &
+      wait_pid=$!
+    fi
 
-  wait $wait_pid
-  exit 0
+    wait $wait_pid
+    exit 0
+
+  else
+    sleep infinity &
+    wait $!
+    exit 0
+  fi
 fi

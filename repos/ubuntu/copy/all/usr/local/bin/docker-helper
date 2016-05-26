@@ -3,6 +3,7 @@
 . /usr/local/share/docker/helpers
 set -e
 
+# --
 
 if [ $# -gt 0 ]; then
   cmd=$(echo $1 | sed 's/\-/_/g')

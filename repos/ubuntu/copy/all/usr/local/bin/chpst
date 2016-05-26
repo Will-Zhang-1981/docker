@@ -1,15 +1,15 @@
 #!/bin/sh
+set -e
 
-# -----------------------------------------------------------------------------
+
+# --
 # Copyright: 2015-2016 Jordon Bedwell - MIT
-# -----------------------------------------------------------------------------
 # Overides the default chpst command to give you a HOME if you provide
 # a user, we try to guard against attacks by confirming it to a certain set
 # of strings and rejecting it otherwise but this probably isn't super
 # bulletproof and would probably be better in Perl, Ruby or Python.
-# -----------------------------------------------------------------------------
+# --
 
-set -e
 user=
 while getopts ":u:" OPT "$@"; do
   case $OPT in
@@ -21,6 +21,10 @@ while getopts ":u:" OPT "$@"; do
   esac
 done
 
+# --
+# Export the user home.
+# --
+
 if [ "$user" ]; then
   user_home=$(eval echo ~$user)
   if [ "$user_home" ] && [ "$user_home" != "\~$user" ]; then
@@ -28,10 +32,18 @@ if [ "$user" ]; then
   fi
 fi
 
+# --
+# Pull out the system chpst.
+# We do not want ours as that would cause a loop.
+# Nobody wants to deal with that.
+# --
+
 bin=$(PATH=$(echo $PATH | sed -r 's,/usr/local/(s)?bin:,,g') which chpst)
 if [ -z "$bin" ]; then
   >&2 echo "chpst not found in path"
   exit 1
 fi
+
+# --
 
 exec $bin "$@"
