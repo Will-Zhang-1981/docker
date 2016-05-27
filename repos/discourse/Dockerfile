@@ -48,9 +48,10 @@ RUN \
     build-essential libxslt1-dev libxml2-dev libpq-dev ruby-dev && \
   docker-helper cleanup
 COPY copy /
-VOLUME /opt/discourse/public/assets
-VOLUME /opt/discourse/public/javascripts
-VOLUME /opt/discourse/public/uploads
-VOLUME /opt/discourse/public/images
-VOLUME /opt/discourse/plugins
+VOLUME \
+  /opt/discourse/public/assets \
+  /opt/discourse/public/javascripts \
+  /opt/discourse/public/uploads \
+  /opt/discourse/public/images \
+  /opt/discourse/plugins
 EXPOSE 3000
