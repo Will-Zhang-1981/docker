@@ -6,15 +6,19 @@ set -e
 
 
 stop_d() {
-  if echo "$1" | grep -Eq '^[0-9]+$' && [ -d /etc/startup$1.d ] && [ "$(ls -A /etc/startup$1.d)" ]; then
-    for f in /etc/startup$1.d/*; do
-      sv stop "$f"
-    done
+  if [ -z "$SKIP_STARTUP" ]; then
+    if echo "$1" | grep -Eq '^[0-9]+$' && [ -d /etc/startup$1.d ] && \
+          [ "$(ls -A /etc/startup$1.d)" ]; then
+
+      for f in /etc/startup$1.d/*; do
+        sv stop "$f"
+      done
+    fi
   fi
 }
 
 shutdown_d() {
-  if [ "$(ls -A /etc/shutdown.d)" ]; then
+  if [ -z "$SKIP_STARTUP" ] && [ "$(ls -A /etc/shutdown.d)" ]; then
     for f in /etc/shutdown.d/*; do
       if [ -f "$f" ] && [ -x "$f" ]; then
         "$f"
