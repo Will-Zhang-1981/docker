@@ -39,6 +39,8 @@ RUN \
   echo libxslt1.1 hold |dpkg --set-selections && \
   echo libxml2 hold |dpkg --set-selections && \
 
+  mv /opt/discourse/plugins /opt/discourse/.plugins && \
+  docker-helper create-dir discourse:discourse /opt/discourse/plugins && \
   ln -sf /opt/discourse/log/production.log /etc/stdout.d/production.log && \
   ln -sf /opt/discourse/log/unicorn.stderr.log /etc/stdout.d/unicorn.stderr.log && \
   ln -sf /opt/discourse/log/unicorn.stdout.log /etc/stdout.d/unicorn.stdout.log && \
