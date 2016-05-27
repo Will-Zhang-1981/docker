@@ -1,2 +1,9 @@
 tags:
-  latest: normal
+  3.2: normal
+  3.0: normal
+aliases:
+  latest: 3.2
+distro:
+  tag:
+    3.2: envygeeks/alpine:3.4
+    3.0: envygeeks/alpine:3.3

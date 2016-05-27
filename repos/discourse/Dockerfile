@@ -1,42 +1,54 @@
 FROM envygeeks/ubuntu
-MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
-ENV <%= @meta.env %>
+MAINTAINER <%= @meta.maintainer %>
+ENV \
+  BUNDLE_ARGS=--jobs=4 --without=development:test:profile \
+  FORCE_BUNDLE=true \
+  RAILS_ENV=production \
+  UNICORN_SIDEKIQS=1 \
+  DISCOURSE_DB_PORT=5432 \
+  DISCOURSE_DB_USER=discourse \
+  DISCOURSE_DB_HOST=postgresql \
+  DISCOURSE_DB_NAME=discourse \
+  DISCOURSE_REDIS_HOST=redis \
+  DISCOURSE_REDIS_PORT=6379 \
+  UNICORN_ENABLE_OOBGC=0 \
+  UNICORN_WORKERS=2
 RUN \
   apt-get update && \
-  apt-get install --no-install-recommends -y <%= @meta.packages %> && \
-  apt-get install --no-install-recommends -y <%= @meta.development_packages %> && \
-  npm install -g <%= @meta.nodejs_packages %> && \
-  gem install bundler --no-document && \
+  apt-get install --no-install-recommends -y libffi-dev libssl-dev libyaml-dev \
+    libreadline6-dev build-essential libxslt1-dev libxml2-dev libpq-dev ruby-dev libxml2 \
+    optipng libyaml-0-2 imagemagick libreadline6 libjpeg-turbo-progs postgresql-client \
+    nodejs-legacy ghostscript libxslt1.1 jpegoptim gifsicle nodejs jhead ruby \
+    git npm && \
 
-  groupadd -rg 1000 discourse && \
-  useradd  -u  1000 -g 1000 -rMd /home/discourse discourse && \
+  docker-helper add-user-1000 discourse && \
   docker-helper create-dir discourse:discourse /opt/discourse  && \
-  docker-helper create-dir discourse:discourse /home/discourse && \
+  gem install bundler --no-document && \
+  npm install -g svgo && \
 
   cd /opt/discourse && \
-  git clone --single-branch --branch v<%= @meta.version %> \
+  git clone --single-branch --depth=1 --branch v<%= @meta.release %> \
     https://github.com/discourse/discourse.git . && \
 
-  cd /opt/discourse && \
-  export FORCE_BUNDLE=true && \
-  mkdir -p /usr/share/ruby && \
-  echo "<%= @meta.gems %>" > /usr/share/ruby/default-gems && \
-  export BUNDLE_ARGS="-j 128 --without=development:test" && \
   docker-helper install-users-gems && \
-
-  <% @meta["keeps"].to_a.each do |keep| %>
-    echo <%= keep %> hold | dpkg --set-selections && \
-  <% end %>
-
+  chown -R discourse:discourse /opt/discourse && \
   docker-helper enable-stdout-logger && \
-  docker-helper apt-clean <%= @meta.development_packages %> && \
-  docker-helper cleanup && \
+
+  echo libpq5 hold |dpkg --set-selections && \
+  echo libssl1.0.0 hold |dpkg --set-selections && \
+  echo libxslt1.1 hold |dpkg --set-selections && \
+  echo libxml2 hold |dpkg --set-selections && \
 
   ln -sf /opt/discourse/log/production.log /etc/stdout.d/production.log && \
   ln -sf /opt/discourse/log/unicorn.stderr.log /etc/stdout.d/unicorn.stderr.log && \
   ln -sf /opt/discourse/log/unicorn.stdout.log /etc/stdout.d/unicorn.stdout.log && \
-  chown -R discourse:discourse /opt/discourse
-
+  apt-get autoremove --purge -y libffi-dev libssl-dev libyaml-dev libreadline6-dev \
+    build-essential libxslt1-dev libxml2-dev libpq-dev ruby-dev && \
+  docker-helper cleanup
 COPY copy /
+VOLUME /opt/discourse/public/assets
+VOLUME /opt/discourse/public/javascripts
 VOLUME /opt/discourse/public/uploads
+VOLUME /opt/discourse/public/images
+VOLUME /opt/discourse/plugins
 EXPOSE 3000

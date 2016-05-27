@@ -1,5 +1,5 @@
-FROM envygeeks/alpine:<%= @meta.release %>
-MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
+FROM <%= @meta.distro %>
+MAINTAINER <%= @meta.maintainer %>
 RUN \
   apk --update add postgresql postgresql-contrib && \
   docker-helper reset_users postgres:1000 && \
@@ -10,7 +10,6 @@ RUN \
   chown postgres:postgres  /run/postgresql && \
   chmod og-rwx /srv/postgresql && \
   docker-helper cleanup
-
 ADD copy /
 VOLUME /srv/postgresql
 EXPOSE 5432

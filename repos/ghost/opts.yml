@@ -1,20 +1,12 @@
-stable_version: &stable 0.7.8
-stable_minor_version: &stable_minor_version 0.7
-stable_major_version: &stable_major_version 7
-
-#
-
-versions:
-  tag:
-    *stable: *stable
-#
-
 tags:
-  *stable: normal
-
-#
-
+  0.8.0: normal
+  0.7.9: normal
+releases:
+  tag:
+    0.7.9: 0.7.9
+    0.8.0: 0.8.0
 aliases:
-  latest: *stable
-  *stable_minor_version: *stable
-  *stable_major_version: *stable
+  latest: 0.8.0
+  0.8: 0.8.0
+  0.7: 0.7.9
+  0: 0.8.0

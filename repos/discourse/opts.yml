@@ -1,93 +1,14 @@
-beta_version: &beta_version 1.6.0
-beta_minor_version: &beta_minor_version "1.6"
-stable_major_version: &stable_major_version "1"
-stable_minor_version: &stable_minor_version "1.5"
-stable_version: &stable_version "1.5.2"
-beta_tag: &beta_tag 1.6.0.beta5
-
-#
-
-versions:
-  group:
-    beta: *beta_tag
-    stable: *stable_version
-
-#
-
 tags:
-  *stable_version: stable
-  *beta_version: beta
-
-#
-
+  1.5.2: stable
+  1.6.0: beta
+releases:
+  tag:
+    1.6.0: 1.6.0.beta5
+    1.5.2: 1.5.2
 aliases:
-  beta: *beta_version
-  latest: *stable_version
-  stable: *stable_version
-  *stable_major_version: *stable_version
-  *stable_minor_version: *stable_version
-  *beta_minor_version: *beta_version
-
-#
-
-development_packages:
-  all:
-    - libffi-dev
-    - libssl-dev
-    - libyaml-dev
-    - libreadline6-dev
-    - build-essential
-    - libxslt1-dev
-    - libxml2-dev
-    - libpq-dev
-    - ruby-dev
-
-#
-
-packages:
-  all:
-    - libxml2
-    - optipng
-    - libyaml-0-2
-    - imagemagick
-    - libreadline6
-    - libjpeg-turbo-progs
-    - postgresql-client
-    - nodejs-legacy
-    - ghostscript
-    - libxslt1.1
-    - jpegoptim
-    - gifsicle
-    - nodejs
-    - jhead
-    - ruby
-    - git
-    - npm
-
-nodejs_packages:
-  all:
-    - svgo
-
-#
-
-keeps:
-  all:
-    - libpq5
-    - libssl1.0.0
-    - libxslt1.1
-    - libxml2
-
-#
-
-env:
-  all:
-    RAILS_ENV: production
-    UNICORN_SIDEKIQS: 1
-    DISCOURSE_DB_PORT: 5432
-    DISCOURSE_DB_USER: discourse
-    DISCOURSE_DB_HOST: postgresql
-    DISCOURSE_DB_NAME: discourse
-    DISCOURSE_REDIS_HOST: redis
-    DISCOURSE_REDIS_PORT: 6379
-    UNICORN_ENABLE_OOBGC: 0
-    UNICORN_WORKERS: 2
+  beta: 1.6.0
+  latest: 1.5.2
+  stable: 1.5.2
+  1.5: 1.5.2
+  1.6: 1.6.0
+  1: 1.5.2

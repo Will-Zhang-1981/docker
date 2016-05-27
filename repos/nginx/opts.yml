@@ -1,23 +1,10 @@
-release:
-  tag:
-    "1.9":  3.3
-    "1.10": 3.4
-#
-
 tags:
   "1.9":  normal
   "1.10": normal
-
-#
-
 aliases:
   latest: "1.10"
   1: "1.10"
-
-#
-
-packages:
-  all:
-    - nginx-lua
-    - lua5.1-socket
-    - lua-socket
+distro:
+  tag:
+    "1.9":  envygeeks/alpine:3.3
+    "1.10": envygeeks/alpine:3.4

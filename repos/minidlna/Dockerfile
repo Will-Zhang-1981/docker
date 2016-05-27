@@ -1,5 +1,5 @@
-FROM envygeeks/alpine
-MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
+FROM <%= @meta.distro %>
+MAINTAINER <%= @meta.maintainer %>
 COPY copy /
 RUN \
   apk --update add minidlna && \

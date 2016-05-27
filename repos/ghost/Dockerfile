@@ -1,35 +1,28 @@
-FROM envygeeks/alpine
-MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
+FROM envygeeks/alpine:3.3
+MAINTAINER <%= @meta.maintainer %>
 RUN \
-  apk --update add nodejs git sqlite libuv libstdc++ openssl sqlite-dev python \
-    build-base openssl-dev zlib-dev libuv-dev linux-headers wget git && \
+  apk --update add nodejs sqlite openssl libuv git sqlite-dev build-base \
+    linux-headers openssl-dev libuv-dev zlib-dev python wget && \
 
+  mkdir -p /opt/ghost &&  \
   mkdir -p /usr/src && cd /usr/src && \
-  wget -nv https://ghost.org/zip/ghost-<%= @meta.version %>.zip -O ghost.zip && \
-  mkdir /usr/local/lib/ghost &&  \
-  unzip ghost.zip -d /usr/local/lib/ghost && \
+  wget -nv https://ghost.org/zip/ghost-<%= @meta.release %>.zip -O ghost.zip && \
+  unzip ghost.zip -d /opt/ghost && \
+  rm -rf /usr/src/ghost.zip && \
 
-  addgroup -Sg 1000 ghost && \
-  adduser  -SG ghost -u 1000 -h /home/ghost ghost && \
-  docker-helper create_dir ghost:ghost /home/ghost && \
-  docker-helper create_dir ghost:ghost  /srv/ghost && \
+  docker-helper add-user-1000 ghost && \
+  docker-helper create_dir ghost:ghost /srv/ghost && \
+  cp -R /opt/ghost/content/* /srv/ghost && \
+  rm -rf /opt/ghost/content && \
+  chown -R ghost:ghost \
+    /opt/ghost && \
 
-  cd /usr/local/lib/ghost && \
-  mkdir -p /usr/local/share/ghost && \
-  rm -rf config.example.js npm-shrinkwrap.json && \
-  mv LICENSE /usr/local/share/ghost/COPY && \
-  mv PRIVACY.md /usr/local/share/ghost/PRIVACY && \
-  mv content/* /srv/ghost && \
-  rm -rf README.md content/ \
-    Gruntfile.js && \
-
-  rm -rf /srv/ghost/*/README.md && \
-  chown -R ghost:ghost /srv/ghost && \
+  cd /opt/ghost && \
   npm install --sqlite=/usr --production && \
-  npm install pg mysql --save && \
-  apk del git sqlite-dev python build-base openssl-dev zlib-dev libuv-dev \
-    linux-headers wget && \
-  rm -rf .git && docker-helper cleanup
+  npm install pg mysql --production --save && \
+  apk del sqlite-dev build-base linux-headers openssl-dev \
+    libuv-dev zlib-dev python wget && \
+  docker-helper cleanup
 COPY copy /
 VOLUME /srv/ghost
 EXPOSE 4000

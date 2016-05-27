@@ -1,5 +1,5 @@
-FROM envygeeks/alpine
-MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
+FROM <%= @meta.distro %>
+MAINTAINER <%= @meta.maintainer %>
 RUN \
   apk --update add redis && \
   rm -rf /etc/redis /etc/redis.conf \

@@ -1,12 +1,13 @@
-FROM envygeeks/alpine:<%= @meta.release %>
-MAINTAINER Jordon Bedwell <jordon@envygeeks.io>
+FROM <%= @meta.distro %>
+MAINTAINER <%= @meta.maintainer %>
 RUN \
-  apk --update add <%= @meta.packages %> && \
-  <% if @meta.tag == "ubuntu" %>usermod -l nginx www-data && groupmod -n nginx www-data && \<% end %>
+  apk --update add nginx-lua lua5.1-socket lua-socket && \
   sed -ri 's!/var/www/localhost/htdocs!/srv/nginx!' /etc/passwd && \
   sed -ri 's!:Linux User,{3}:!:nginx:!' /etc/passwd && \
   docker-helper reset_users nginx:1000 && \
   docker-helper enable_stdout_logger && \
+
+  mkdir -p /var/lib/nginx/cache && \
   ln -sf /var/log/nginx/error.log  /etc/stdout.d/error.log  && \
   ln -sf /var/log/nginx/access.log /etc/stdout.d/access.log && \
   chown -R nginx.nginx /var/lib/nginx && \
