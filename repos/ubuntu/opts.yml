@@ -29,7 +29,7 @@ cleanup:
     - rsyslog
     - eject
     - ed
-deep_clean:
+deep_cleanup:
   all:
     - ncurses-bin
     - ncurses-base
