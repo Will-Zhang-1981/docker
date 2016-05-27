@@ -16,13 +16,11 @@ releases:
     "16.04": xenial
 packages:
   all:
-    - sudo
-    - ca-certificates
-    - tzdata
     - runit
-package_cleanup:
+cleanup:
   all:
     - nano
+    - sudo
     - vim-tiny
     - vim-common
     - isc-dhcp-common
@@ -31,5 +29,10 @@ package_cleanup:
     - rsyslog
     - eject
     - ed
+deep_clean:
+  all:
+    - ncurses-bin
+    - ncurses-base
+    - bash
 entries:
   all: /usr/local/bin/startup
