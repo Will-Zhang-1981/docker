@@ -15,7 +15,7 @@ ENV \
   UNICORN_WORKERS=2
 RUN \
   apt-get update && apt-get install ucf bash -y && \
-  apt-get install --no-install-recommends -y ucf libffi-dev libssl-dev libyaml-dev \
+  apt-get install --no-install-recommends -y libffi-dev libssl-dev libyaml-dev \
     libreadline6-dev build-essential libxslt1-dev libxml2-dev libpq-dev ruby-dev libxml2 \
     optipng libyaml-0-2 imagemagick libreadline6 libjpeg-turbo-progs postgresql-client \
     nodejs-legacy ghostscript libxslt1.1 jpegoptim gifsicle nodejs jhead ruby \
@@ -34,19 +34,19 @@ RUN \
   chown -R discourse:discourse /opt/discourse && \
   docker-helper enable-stdout-logger && \
 
-  echo libpq5 hold |dpkg --set-selections && \
-  echo libssl1.0.0 hold |dpkg --set-selections && \
-  echo libxslt1.1 hold |dpkg --set-selections && \
-  echo libxml2 hold |dpkg --set-selections && \
+  echo libxml2           hold | dpkg --set-selections && \
+  echo libssl1.0.0       hold | dpkg --set-selections && \
+  echo libxslt1.1        hold | dpkg --set-selections && \
+  echo libpq5            hold | dpkg --set-selections && \
 
   mv /opt/discourse/plugins /opt/discourse/.plugins && \
   docker-helper create-dir discourse:discourse /opt/discourse/plugins && \
   ln -sf /opt/discourse/log/production.log /etc/stdout.d/production.log && \
   ln -sf /opt/discourse/log/unicorn.stderr.log /etc/stdout.d/unicorn.stderr.log && \
   ln -sf /opt/discourse/log/unicorn.stdout.log /etc/stdout.d/unicorn.stdout.log && \
-  apt-get autoremove --purge -y ucf bash libffi-dev libssl-dev libyaml-dev \
-    libreadline6-dev build-essential libxslt1-dev libxml2-dev libpq-dev \
-    ruby-dev && docker-helper cleanup
+  apt-get autoremove --purge -y libffi-dev libssl-dev libyaml-dev \
+    libreadline6-dev build-essential libxslt1-dev libxml2-dev \
+    libpq-dev ruby-dev && docker-helper cleanup
 COPY copy /
 VOLUME \
   /opt/discourse/public/assets \
