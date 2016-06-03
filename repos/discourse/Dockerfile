@@ -14,7 +14,7 @@ ENV \
   UNICORN_ENABLE_OOBGC=0 \
   UNICORN_WORKERS=2
 RUN \
-  apt-get update && apt-get install ucf -y && \
+  apt-get update && apt-get install ucf bash -y && \
   apt-get install --no-install-recommends -y ucf libffi-dev libssl-dev libyaml-dev \
     libreadline6-dev build-essential libxslt1-dev libxml2-dev libpq-dev ruby-dev libxml2 \
     optipng libyaml-0-2 imagemagick libreadline6 libjpeg-turbo-progs postgresql-client \
@@ -44,9 +44,9 @@ RUN \
   ln -sf /opt/discourse/log/production.log /etc/stdout.d/production.log && \
   ln -sf /opt/discourse/log/unicorn.stderr.log /etc/stdout.d/unicorn.stderr.log && \
   ln -sf /opt/discourse/log/unicorn.stdout.log /etc/stdout.d/unicorn.stdout.log && \
-  apt-get autoremove --purge -y libffi-dev libssl-dev libyaml-dev libreadline6-dev \
-    build-essential libxslt1-dev libxml2-dev libpq-dev ruby-dev && \
-  docker-helper cleanup
+  apt-get autoremove --purge -y ucf bash libffi-dev libssl-dev libyaml-dev \
+    libreadline6-dev build-essential libxslt1-dev libxml2-dev libpq-dev \
+    ruby-dev && docker-helper cleanup
 COPY copy /
 VOLUME \
   /opt/discourse/public/assets \
