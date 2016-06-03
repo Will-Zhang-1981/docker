@@ -1,7 +1,7 @@
 FROM envygeeks/ubuntu
 MAINTAINER <%= @meta.maintainer %>
 ENV \
-  BUNDLE_ARGS=--jobs=4 --without=development:test:profile \
+  BUNDLE_ARGS="--jobs=4 --without=development test profile" \
   FORCE_BUNDLE=true \
   RAILS_ENV=production \
   UNICORN_SIDEKIQS=1 \
