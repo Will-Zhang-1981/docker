@@ -152,8 +152,7 @@ ruby_install_gem() {
       gem install "$gem_name" \
           -v "$gem_version" \
           -v "< $max_version" \
-          --no-document -- \
-              --use-system-libraries
+          --no-document
 
     # gem install docker-template -v "0" -v "< 1"
     # We constrain it widely so you get a range of what you want.
@@ -164,20 +163,17 @@ ruby_install_gem() {
       gem install "$gem_name" \
           -v "$gem_version" \
           -v "< $max_version" \
-          --no-document -- \
-              --use-system-libraries
+          --no-document
 
     elif [ "$gem_version" ]; then
       gem install "$gem_name" \
           -v "$gem_version" \
-              --no-document -- \
-                  --use-system-libraries
+              --no-document
 
     else
       # When there is no version at all.
       gem install "$gem_name" \
-          --no-document -- \
-              --use-system-libraries
+          --no-document
     fi
   fi
 
@@ -267,17 +263,6 @@ install_default_gems() {
 }
 
 #--
-# @echo Nothing
-# Make Nokogiri use the system LibXML
-# @return 0
-# --
-configure_nokogiri() {
-  bundle config build.nokogiri  "--use-system-libraries=true --with-xml2-include=/usr/include/libxml2"
-  bundle config build.nokogumbo "--use-system-libraries=true --with-xml2-include=/usr/include/libxml2"
-  return 0
-}
-
-#--
 # Triggers an install or exists if one was already ran.
 # @echo On Error
 # @return 1 | 0
@@ -307,8 +292,6 @@ ___ruby_scream_fatality_or_install() {
 # @return 0|1
 #--
 install_users_gems() {
-  configure_nokogiri
-
   if [ -f Gemfile ]; then
     for i in 1 2 3; do
       ___ruby_scream_fatality_or_install $i
