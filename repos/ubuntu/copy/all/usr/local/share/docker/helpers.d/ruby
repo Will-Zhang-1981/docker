@@ -373,7 +373,7 @@ has_git_gemfile() {
 install_ruby_depends() {
   if [ -z "$SKIP_RUBY_DEPENDS" ]; then
     if [ "$(operating_system)" = "alpine" ]; then
-      apk --update add \
+      sudo apk --update add \
           ruby-dev \
           libxml2-dev \
           readline-dev \
@@ -384,7 +384,7 @@ install_ruby_depends() {
           git
 
     else
-      apt-get install --no-install-recommends --assume-yes \
+      sudo apt-get install --no-install-recommends --assume-yes \
           ruby-dev \
           libxml2-dev \
           libreadline6-dev \
@@ -405,7 +405,7 @@ install_ruby_depends() {
 uninstall_ruby_depends() {
   if [ -z "$KEEP_RUBY_DEPENDS" ] && [ -z "$SKIP_RUBY_DEPENDS" ]; then
     if [ "$(operating_system)" = "alpine" ]; then
-      apk del \
+      sudo apk del \
           ruby-dev \
           libffi-dev \
           libxml2-dev \
@@ -416,7 +416,7 @@ uninstall_ruby_depends() {
           git
 
     else
-      apt-get autoremove --purge --assume-yes \
+      sudo apt-get autoremove --purge --assume-yes \
           ruby-dev \
           libxml2-dev \
           libxslt1-dev \
