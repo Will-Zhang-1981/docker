@@ -20,7 +20,6 @@ packages:
 package_cleanup:
   all:
     - nano
-    - sudo
     - vim-tiny
     - vim-common
     - isc-dhcp-common
@@ -29,10 +28,5 @@ package_cleanup:
     - rsyslog
     - eject
     - ed
-package_deep_cleanup:
-  all:
-    - ncurses-bin
-    - ncurses-base
-    - bash
 entries:
   all: /usr/local/bin/startup

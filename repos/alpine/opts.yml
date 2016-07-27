@@ -7,7 +7,9 @@ aliases:
   latest: 3.4
 packages:
   all:
+    - sudo
     - runit@testing
+    - bash
 releases:
   tag:
     3.4: 3.4
