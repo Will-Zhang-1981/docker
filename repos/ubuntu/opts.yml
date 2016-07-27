@@ -2,18 +2,21 @@ rootfs_template: ubuntu
 type: scratch
 tags:
   "14.04": lts
-  "15.10": release
+  "15.10": nlt
   "16.04": lts
+  "16.10": nlt
 aliases:
-  trusty: "14.04"
-  wily: "15.10"
-  xenial: "16.04"
-  latest: "16.04"
+  trusty:  "14.04"
+  wily:    "15.10"
+  xenial:  "16.04"
+  latest:  "16.04"
+  yakkety: "16.10"
 releases:
   tag:
     "14.04": trusty
     "15.10": wily
     "16.04": xenial
+    "16.10": yakkety
 packages:
   all:
     - runit
