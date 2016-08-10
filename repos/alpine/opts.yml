@@ -1,8 +1,9 @@
 rootfs_template: alpine
 type: scratch
 tags:
-  3.4: normal
-  3.3: normal
+  3.4:  normal
+  edge: normal
+  3.3:  normal
 aliases:
   latest: 3.4
 packages:
@@ -13,6 +14,7 @@ packages:
     - bash
 releases:
   tag:
+    edge: edge
     3.4: 3.4
     3.3: 3.3
 entries:
