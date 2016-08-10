@@ -9,6 +9,7 @@ packages:
   all:
     - sudo
     - runit@testing
+    - tzdata
     - bash
 releases:
   tag:
