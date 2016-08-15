@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+if [ -f /etc/service/h2o/error ]; then
+  echo "Refusing to start, there was an h2o error."
+  sleep 300
+  exit 1
+else
+  touch /run/h2o.pid && chown h2o:h2o /run/h2o.pid
+  exec h2o -c /etc/h2o.conf || touch \
+    /etc/service/h2o/error
+fi

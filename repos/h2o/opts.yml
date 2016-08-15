@@ -1,0 +1,8 @@
+tags:
+  "2.0":  normal
+aliases:
+  latest: "2.0"
+  2: "2.0"
+distro:
+  tag:
+    "2.0": envygeeks/alpine:3.4
