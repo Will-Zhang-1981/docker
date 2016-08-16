@@ -1,11 +1,48 @@
 #!/bin/sh
-set -e
 port=5434
-if [ -f /usr/share/postgresql/default/users ] || [ -f /usr/share/postgresql/default/extensions ]; then
-  # In reality we should accept more than just these two files but for now this works.
+set -e
+
+# --
+
+if [ -f /usr/share/postgresql/default/users ]; then
+  echo "/usr/share/postgresql/default/{users,extensions} deprecated"
+  echo "Please store them in /etc/postgresql"
+  mv /usr/share/postgresql/default/users \
+      /etc/postgresql
+fi
+
+# --
+
+if [ -f /usr/share/postgresql/default/extensions ]; then
+  echo "/usr/share/postgresql/default/{users,extensions} deprecated"
+  echo "Please store them in /etc/postgresql"
+  mv /usr/share/postgresql/default/extensions \
+      /etc/postgresql
+fi
+
+# --
+
+if [ "$AUTOMATED_DB_USERS" ]; then
+  touch /etc/postgresql/users
+
+  if [ -s /etc/postgresql/users ];
+    then echo "Skipping user generation, user already exists"
+  else
+    username=$(apg -E '^a-z0-9' -n 1 -m 6)
+    password=$(apg -n 1 -m 20)
+
+    echo "$username:$password:$username" > \
+        /etc/postgresql/users
+  fi
+fi
+
+# --
+
+if [ -f /etc/postgresql/users ] || [ -f /etc/postgresql/extensions ]; then
 
   touch /var/log/postgres.tmp.log
-  chpst -u postgres postgres -D /srv/postgresql -c "config_file=/etc/postgresql/postgresql.conf" \
+  chpst -u postgres postgres -D /srv/postgresql \
+    -c "config_file=/etc/postgresql/postgresql.conf" \
     -c "port=$port" 1> /var/log/postgres.tmp.log 2>&1 &
   pid=$!
 
@@ -24,11 +61,12 @@ if [ -f /usr/share/postgresql/default/users ] || [ -f /usr/share/postgresql/defa
   if [ -z "$started" ]; then
     echo "Unable to start Postgresql, maybe this log will help: "
     cat /var/log/postgres.tmp.log
-    rm -rf /var/log/postgres.tmp.log
     exit 1
   fi
 
-  if [ -f /usr/share/postgresql/default/users ] && rm -rf /var/log/postgres.tmp.log; then
+  if [ -f /usr/share/postgresql/default/users ]; then
+    rm -rf /var/log/postgres.tmp.log
+
     for v in $(cat /usr/share/postgresql/default/users); do
       user=$(echo $v | awk -F: '{ print $1 }')
       pass=$(echo $v | awk -F: '{ print $2 }')
@@ -66,4 +104,5 @@ if [ -f /usr/share/postgresql/default/users ] || [ -f /usr/share/postgresql/defa
   kill $pid
   wait $pid
 fi
+
 exit 0

@@ -1,7 +1,7 @@
 FROM <%= @meta.distro %>
 MAINTAINER <%= @meta.maintainer %>
 RUN \
-  apk --update add postgresql postgresql-contrib && \
+  apk --update add postgresql postgresql-contrib apg && \
   docker-helper reset_users postgres:1000 && \
 
   rm -rf /srv/postgresql /etc/postgresql /etc/postgresql.conf && \
