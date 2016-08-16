@@ -1,14 +1,14 @@
 tags:
-  1.6.0: stable
+  1.6.1: stable
   1.7.0: beta
 releases:
   tag:
-    1.7.0: 1.7.0.beta1
-    1.6.0: 1.6.0
+    1.7.0: 1.7.0.beta2
+    1.6.1: 1.6.1
 aliases:
   beta: 1.7.0
-  latest: 1.6.0
-  stable: 1.6.0
+  latest: 1.6.1
+  stable: 1.6.1
   1.7: 1.7.0
-  1.6: 1.6.0
-  1: 1.6.0
+  1.6: 1.6.1
+  1: 1.6.1
