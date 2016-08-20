@@ -1,7 +1,7 @@
 FROM <%= @meta.distro %>
 MAINTAINER <%= @meta.maintainer %>
 RUN \
-  apk --update add shadow@testing h2o@community && \
+  apk --update add shadow@community h2o@community && \
 
   addgroup -S h2o && \
   usermod -g h2o h2o && \
