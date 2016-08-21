@@ -1,0 +1,6 @@
+tags:
+  1.0: normal
+aliases:
+  latest: 1.0
+distros:
+  all: envygeeks/alpine:3.3
