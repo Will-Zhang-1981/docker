@@ -1,9 +1,6 @@
 rootfs_template: alpine
 type: scratch
-helpers:
-  all: true
-  group:
-    min: false
+helpers: true
 tags:
   edge: normal
   3.3-min: min

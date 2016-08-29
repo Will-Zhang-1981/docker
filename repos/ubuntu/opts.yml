@@ -1,9 +1,6 @@
 rootfs_template: ubuntu
 type: scratch
-helpers:
-  all: true
-  group:
-    min: false
+helpers: true
 tags:
   "14.04": normal
   "16.04": normal
