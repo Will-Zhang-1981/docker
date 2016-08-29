@@ -1,7 +1,7 @@
 FROM <%= @meta.distro %>
 MAINTAINER <%= @meta.maintainer %>
 RUN \
-  apk --update add prosody@testing lua-zlib@testing lua-event@testing lua-sec lua && \
+  apk --update add prosody@community lua-sec lua && \
   docker-helper reset_user prosody:1000 && \
   docker-helper create_dir prosody:prosody /run/prosody && \
   docker-helper enable_stdout_logger && \
