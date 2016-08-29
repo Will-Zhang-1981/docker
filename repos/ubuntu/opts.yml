@@ -1,26 +1,35 @@
 rootfs_template: ubuntu
 type: scratch
+helpers:
+  all: true
+  group:
+    min: false
 tags:
-  "14.04": lts
-  "15.10": nlt
-  "16.04": lts
-  "16.10": nlt
+  "14.04": normal
+  "16.04": normal
+  "16.10": normal
+  14.04-min: min
+  16.04-min: min
+  16.10-min: min
 aliases:
   trusty:  "14.04"
-  wily:    "15.10"
   xenial:  "16.04"
   latest:  "16.04"
   yakkety: "16.10"
 releases:
   tag:
     "14.04": trusty
-    "15.10": wily
     "16.04": xenial
     "16.10": yakkety
+    14.04-min: trusty
+    16.04-min: xenial
+    16.10-min: yakkety
 packages:
-  all:
-    - runit
-    - tzdata
+  group:
+    normal:
+      - runit
+      - tzdata
+      - sudo
 package_cleanup:
   all:
     - nano
@@ -34,3 +43,5 @@ package_cleanup:
     - ed
 entries:
   all: /usr/local/bin/startup
+  group:
+    normal: false

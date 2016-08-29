@@ -1,22 +1,36 @@
 rootfs_template: alpine
 type: scratch
+helpers:
+  all: true
+  group:
+    min: false
 tags:
-  3.4:  normal
   edge: normal
-  3.3:  normal
+  3.3-min: min
+  3.4-min: min
+  3.3: normal
+  3.4: normal
 aliases:
   latest: 3.4
 packages:
-  all:
-    - sudo
-    - runit@testing
-    - tzdata
-    - bash
+  group:
+    normal:
+      - tzdata
+      - runit@community
+      - sudo
+      - bash
 releases:
   tag:
     edge: edge
-    3.4: 3.4
+    3.3-min: 3.3
+    3.4-min: 3.4
     3.3: 3.3
+    3.4: 3.4
 entries:
   group:
     normal: /usr/local/bin/startup
+    min: false
+startup:
+  all: true
+  group:
+    min: false
