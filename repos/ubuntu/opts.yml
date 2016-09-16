@@ -5,9 +5,6 @@ tags:
   "14.04": normal
   "16.04": normal
   "16.10": normal
-  14.04-min: min
-  16.04-min: min
-  16.10-min: min
 aliases:
   trusty:  "14.04"
   xenial:  "16.04"
@@ -18,13 +15,9 @@ releases:
     "14.04": trusty
     "16.04": xenial
     "16.10": yakkety
-    14.04-min: trusty
-    16.04-min: xenial
-    16.10-min: yakkety
 packages:
   group:
     normal:
-      - runit
       - tzdata
       - sudo
 package_cleanup:
@@ -38,7 +31,3 @@ package_cleanup:
     - rsyslog
     - eject
     - ed
-entries:
-  all: /usr/local/bin/startup
-  group:
-    normal: false
