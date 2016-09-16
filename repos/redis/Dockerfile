@@ -5,13 +5,12 @@ RUN \
   rm -rf /etc/redis /etc/redis.conf \
     /srv/redis && \
 
-  docker-helper reset_users redis:1000 && \
-  docker-helper create_dir redis:redis /srv/redis && \
-  docker-helper cleanup && \
-
-  docker-helper enable_stdout_logger && \
-  ln -sf /var/log/redis.log /etc/stdout.d/redis.log && \
-  docker-helper create_log redis:redis redis.log
+  reset-user redis:1000 && \
+  mkdir -p /srv/redis && chown redis:redis \
+    /srv/redis && \
+  cleanup
+#
 COPY copy /
+CMD ["/usr/local/bin/redis-server", "/etc/redis/redis.conf"]
 VOLUME /srv/redis
 EXPOSE 6379

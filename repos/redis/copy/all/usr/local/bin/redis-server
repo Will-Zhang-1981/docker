@@ -1,0 +1,6 @@
+#!/bin/sh
+touch /var/log/redis.log
+chown redis:redis /var/log/redis.log
+tail -qf /var/log/redis.log &
+exec sudo -Hu redis /usr/bin/redis-server \
+  "$@"
