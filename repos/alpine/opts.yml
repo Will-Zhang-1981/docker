@@ -2,7 +2,6 @@ rootfs_template: alpine
 type: scratch
 helpers: true
 tags:
-  edge: normal
   3.3: normal
   3.4: normal
 aliases:
@@ -11,10 +10,8 @@ packages:
   group:
     normal:
       - sudo
-      - tzdata
       - bash
 releases:
   tag:
-    edge: edge
     3.3: 3.3
     3.4: 3.4
