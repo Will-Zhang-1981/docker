@@ -2,12 +2,16 @@
 
 sed -ri "s/__HOSTNAME__/$HOSTNAME/" \
   /etc/prosody/prosody.cfg.lua
-  
+
+# --
+
 ssl_lines() {
   grep -nE '\s+-{2}\s+enable:ssl$' /etc/prosody/prosody.cfg.lua | awk -F: '{
     print $1
   }'
 }
+
+# --
 
 if [ "$ENABLE_SSL" ]; then
   for v in $(ssl_lines); do
@@ -24,5 +28,8 @@ else
   done
 fi
 
-exec chpst -u prosody:prosody \
-  prosody
+# --
+
+tail -qf /var/log/prosody/*.log &
+exec sudo -Hu prosody \
+  /usr/bin/prosody

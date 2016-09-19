@@ -1,17 +1,21 @@
 FROM <%= @meta.distro %>
 MAINTAINER <%= @meta.maintainer %>
 RUN \
-  apk --update add prosody@community lua-sec lua && \
-  docker-helper reset_user prosody:1000 && \
-  docker-helper create_dir prosody:prosody /run/prosody && \
-  docker-helper enable_stdout_logger && \
+  apk --update add prosody@community lua-sec lua libevent lua-lzlib && \
+  mkdir -p /var/log/prosody && \
+  mkdir -p /run/prosody && \
 
-  docker-helper create_log prosody:prosody  prosody/prosody.err && \
-  docker-helper create_log prosody:prosody  prosody/prosody.log && \
-  ln -sf /var/log/prosody/prosody.err /etc/stdout.d/prosody.err && \
-  ln -sf /var/log/prosody/prosody.log /etc/stdout.d/prosody.log && \
+  touch /var/log/prosody/prosody.err && \
+  touch /var/log/prosody/prosody.log && \
+
+  chown -R prosody:prosody /var/log/prosody && \
+  chown -R prosody:prosody /run/prosody && \
+  reset-user prosody:1000 && \
+
   rm -rf /etc/prosody/conf.d \
-    /etc/prosody/conf.avail/localhost.cf.lua
+    /etc/prosody/conf.avail/localhost.cf.lua && \
+  cleanup
 COPY copy /
 VOLUME /var/lib/prosody
+CMD ["/usr/local/bin/prosody"]
 EXPOSE 5222 5269
