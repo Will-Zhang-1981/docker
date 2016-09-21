@@ -1,4 +1,0 @@
-#!/bin/sh
-set -e
-exec chpst -u postgres postgres -D /srv/postgresql -c \
-  'config_file=/etc/postgresql/postgresql.conf'

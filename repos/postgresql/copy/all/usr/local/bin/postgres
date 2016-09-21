@@ -1,0 +1,53 @@
+#!/bin/sh
+
+chown -R postgres:postgres /srv/postgresql
+if [ -z "$(ls -A /srv/postgresql)" ]; then
+  sudo -Hu postgres initdb -D /srv/postgresql
+fi
+
+# --
+
+if [ -z "$PG_USER" ] || [ -z "$PG_PASS" ]; then
+  echo "You must supply \$PG_USER, and \$PG_PASS"
+  exit 1
+
+else
+  : ${PG_DB:=PG_USER}
+
+  sudo -Hu postgres pg_ctl -D /srv/postgresql \
+    -o "-c listen_addresses=localhost" \
+    -o "-c config_file=/etc/postgresql/postgresql.conf" -o "-c port=5432" \
+    -w start > /tmp/postgresql.tmp.log
+
+  # --
+
+  if ! sudo -Hu postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PG_USER'" | grep -q 1
+    then sudo -Hu postgres createuser --no-superuser \
+      --no-createdb --echo $PG_USER
+  fi
+
+  # --
+
+  sudo -Hu postgres psql -c "ALTER USER $PG_USER WITH PASSWORD '$PG_PASS';"
+  sudo -Hu postgres createdb --owner=$PG_USER --echo $PG_DB || \
+    echo "Database already existed, moving along."
+
+  # --
+
+  if [ "$PG_EXT" ]; then
+    for EXT in "$PG_EXT"
+      do sudo -Hu postgres psql -d "$PG_DB" -c "CREATE EXTENSION \"$EXT\""
+    done
+  fi
+
+  # --
+
+  rm -rf /tmp/postgresql.tmp.log
+  sudo -Hu postgres pg_ctl -D /srv/postgresql \
+    -m fast -w stop > /dev/null
+fi
+
+# --
+
+exec sudo -Hu postgres /usr/bin/postgres -D /srv/postgresql -c \
+  "config_file=/etc/postgresql/postgresql.conf"
