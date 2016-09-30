@@ -1,0 +1,73 @@
+#!/bin/sh
+set -e
+[ "$DEBUG" ] && set -x
+: ${MYSQL_ROOT_PASS:=$(apg -m 20 -n 1)}
+MYSQL_INITDB=
+
+chown -R mysql:mysql /srv/mysql
+if [ -z "$(ls -A /srv/mysql)" ]; then
+  sudo -Hu mysql /usr/bin/mysql_install_db --datadir=/srv/mysql --user=mysql \
+    --defaults-file=/etc/mysql/my.cnf --rpm
+  MYSQL_INITDB=true
+fi
+
+# --
+
+mysql_wait() {
+  local COUNT=0; local DONE=
+  while [ "$COUNT" -lt 120 ]; do
+    COUNT=$(echo "$(($COUNT+1))")
+    if kill -0 $1 2>/dev/null && [ "$2" = "start" ] && [ -x /run/mysqld/mysqld.sock ]; then
+      DONE=true; break
+    else
+      if [ "$2" = "stop" ] && ! kill -0 "$1" 2>/dev/null; then
+        DONE=true; break
+
+      else
+        sleep 3
+      fi
+    fi
+  done
+
+  if [ -z "$DONE" ]; then
+    return 1
+  fi
+
+  echo $1
+}
+
+# --
+
+if [ -z "$MYSQL_USER" ] || [ -z "$MYSQL_PASS" ]; then
+  echo "You must supply \$MYSQL_USER, and \$MYSQL_PASS"
+  exit 1
+
+else
+  : ${MYSQL_DB:=$MYSQL_USER}
+
+  echo "
+    SET @@SESSION.SQL_LOG_BIN=0;
+    DELETE FROM mysql.user WHERE Host = '';
+    DELETE FROM mysql.user WHERE User = 'root';
+    DELETE FROM mysql.user WHERE User = 'jordon';
+    CREATE OR REPLACE USER 'root'@'%' IDENTIFIED BY '$MYSQL_ROOT_PASS';
+    GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION;
+    DROP DATABASE IF EXISTS test;
+
+    CREATE DATABASE IF NOT EXISTS $MYSQL_DB;
+    CREATE OR REPLACE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASS';
+    GRANT ALL ON $MYSQL_DB.* TO '$MYSQL_USER'@'%';
+    FLUSH PRIVILEGES;
+  " >> /tmp/myInit.sql
+
+  sudo -Hu mysql /usr/bin/mysqld --init-file=/tmp/myInit.sql \
+    --datadir=/srv/mysql --skip-networking &
+  MYSQL_PID=$(mysql_wait "$!" start)
+
+  kill "$MYSQL_PID"
+  mysql_wait "$MYSQL_PID" \
+    stop
+fi
+
+exec sudo -Hu mysql /usr/bin/mysqld \
+  --datadir=/srv/mysql
