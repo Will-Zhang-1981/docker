@@ -15,6 +15,6 @@ VOLUME /srv/nginx
 VOLUME /etc/nginx/site.d
 VOLUME /etc/nginx/include.d
 VOLUME /etc/nginx/conf.d
-CMD ["/usr/local/bin/nginx"]
+CMD ["/usr/sbin/nginx"]
 EXPOSE 443
 EXPOSE 80
