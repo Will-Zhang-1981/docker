@@ -6,7 +6,7 @@ RUN \
     /srv/redis && \
 
   reset-user redis:1000 && \
-  mkdir -p /srv/redis && chown redis:redis \
+  mkdir -p /srv/redis && chown -R redis:redis \
     /srv/redis && \
   cleanup
 #
