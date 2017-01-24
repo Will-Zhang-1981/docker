@@ -29,8 +29,8 @@ RUN \
   git clone --single-branch --depth=1 --branch v<%= @meta.release %> \
     https://github.com/discourse/discourse.git . && \
 
-  echo 'gem "rails_12factor", group: :production' > Gemfile && \
-  bundle install --path vendor/bundle --without=development test profile && \
+  echo 'gem "rails_12factor", :group => :production' >> Gemfile && \
+  bundle install --without=development test profile && \
   chown -R discourse:discourse \
     /opt/discourse && \
 
@@ -51,4 +51,5 @@ VOLUME \
   /opt/discourse/public/uploads \
   /opt/discourse/public/images \
   /opt/discourse/plugins
+CMD ["/usr/local/bin/discourse"]
 EXPOSE 3000
