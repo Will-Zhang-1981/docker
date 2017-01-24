@@ -2,6 +2,7 @@ rootfs_template: alpine
 type: scratch
 helpers: true
 tags:
+  3.3: normal
   3.4: normal
   3.5: normal
 aliases:
@@ -13,5 +14,6 @@ packages:
       - bash
 releases:
   tag:
+    3.3: 3.3
     3.4: 3.4
     3.5: 3.5
