@@ -2,10 +2,10 @@ rootfs_template: alpine
 type: scratch
 helpers: true
 tags:
-  3.3: normal
   3.4: normal
+  3.5: normal
 aliases:
-  latest: 3.4
+  latest: 3.5
 packages:
   group:
     normal:
@@ -13,5 +13,5 @@ packages:
       - bash
 releases:
   tag:
-    3.3: 3.3
     3.4: 3.4
+    3.5: 3.5
