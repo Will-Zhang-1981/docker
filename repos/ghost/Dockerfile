@@ -6,23 +6,26 @@ RUN \
 
   mkdir -p /opt/ghost &&  \
   mkdir -p /usr/src && cd /usr/src && \
-  wget -nv https://ghost.org/zip/ghost-<%= @meta.release %>.zip -O ghost.zip && \
+  wget -nv https://github.com/TryGhost/Ghost/releases/download/<%= @meta.release %>/Ghost-<%= \
+    @meta.release %>.zip -O ghost.zip && \
   unzip ghost.zip -d /opt/ghost && \
   rm -rf /usr/src/ghost.zip && \
 
-  docker-helper add-user-1000 ghost && \
-  docker-helper create_dir ghost:ghost /srv/ghost && \
+  addgroup -Sg 1000 ghost && \
+  adduser -SHg 1000 ghost && \
+  mkdir -p /srv/ghost && chown ghost:ghost /srv/ghost && \
   cp -R /opt/ghost/content/* /srv/ghost && \
   rm -rf /opt/ghost/content && \
   chown -R ghost:ghost \
     /opt/ghost && \
 
   cd /opt/ghost && \
-  npm install --sqlite=/usr --production && \
-  npm install pg mysql --production --save && \
+  npm install -g yarn && \
+  yarn --sqlite=/usr --production && \
+  yarn add pg mysql --production --save && \
   apk del sqlite-dev build-base linux-headers openssl-dev \
     libuv-dev zlib-dev python wget && \
-  docker-helper cleanup
+  cleanup
 COPY copy /
 VOLUME /srv/ghost
 EXPOSE 4000

@@ -5,15 +5,11 @@ RUN \
 
   addgroup -S h2o && \
   usermod -g h2o h2o && \
-  docker-helper reset_users h2o:1000 && \
-  docker-helper create_dir h2o:h2o /srv/h2o && \
-  docker-helper create_dir h2o:h2o /run/h2o && \
-
-  docker-helper enable_stdout_logger && \
-  ln -sf /var/log/h2o/access.log /etc/stdout.d/h2o_access.log && \
-  ln -sf /var/log/h2o/error.log /etc/stdout.d/h2o_error.log && \
+  reset-user h2o:1000 && \
+  mkdir -p /srv/h2o && chown h2o:h2o /srv/h2o && \
+  mkdir -p /run/h2o && chown h2o:h2o /srv/h2o && \
   apk del shadow && \
-  docker-helper cleanup
+  cleanup
 COPY copy /
 VOLUME /srv/h2o
 EXPOSE 80

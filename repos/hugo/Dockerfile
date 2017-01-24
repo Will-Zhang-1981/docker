@@ -12,6 +12,6 @@ RUN \
     hugo new site /srv/hugo && \
 
   apk del curl ca-certificates && \
-  docker-helper cleanup
+  cleanup
 WORKDIR /srv/hugo
 VOLUME  /srv/hugo
