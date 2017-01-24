@@ -1,0 +1,64 @@
+#!/bin/bash
+set -e
+
+chown -Rh discourse:discourse \
+  /opt/discourse
+
+# --
+# Copy plugins.
+# --
+
+for file in /opt/discourse/.plugins/*; do
+  if [ -d "$file" ]; then
+    name=$(basename $file)
+    rm -rf /opt/discourse/plugins/$name
+    cp -R $file /opt/discourse/plugins/$name
+  fi
+done
+
+# --
+# Configuration.
+# --
+
+if [ -z "$DISCOURSE_SMTP_ADDRESS" ] || [ -z "$DISCOURSE_DEVELOPER_EMAILS" ]; then
+  echo "You have not set DISCOURSE_SMTP_ADDRESS or the DISCOURSE_DEVELOPER_EMAILS, please set them."
+  echo "Bye and best of luck."
+  exit 1
+fi
+
+touch /opt/discourse/config/discourse.conf
+chown discourse:discourse /opt/discourse/config/discourse.conf
+for v in $(printenv | grep -P '^DISCOURSE_' | grep -vE '^DISCOURSE_(VERSION|HOME|DATA)'); do
+  echo $v | sed -r 's/^DISCOURSE_([^=]+)(.*)/\L\1\E\2/' >> \
+    /opt/discourse/config/discourse.conf
+done
+
+# --
+# Base Setup.
+# --
+
+cd /opt/discourse
+for c in tmp:create db:migrate assets:precompile assets:clean uploads:clean_up avatars:clean; do
+  count=0; while [ "$count" -lt 4 ]; do
+    set +e
+    count=$(echo "$(($count+1))")
+    if [ $count -gt 1 ]; then
+      printf "\nRetrying\n"
+    fi
+
+    sudo -Hu discourse bundle exec rake "$c" && break
+    set -e && sleep 6
+  done
+
+  if [ "$count" -gt 3 ]; then
+    exit 1
+  fi
+done
+
+# --
+# Run
+# --
+
+cd /opt/discourse
+exec sudo -Hu discourse config/unicorn_launcher \
+  -E production -c config/unicorn.conf.rb
