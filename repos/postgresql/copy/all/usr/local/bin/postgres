@@ -35,9 +35,21 @@ else
   # --
 
   if [ "$PG_EXT" ]; then
-    for EXT in "$PG_EXT"
+    for EXT in $PG_EXT
       do sudo -Hu postgres psql -d "$PG_DB" -c "CREATE EXTENSION \"$EXT\""
     done
+  fi
+
+  # --
+
+  if [ -f /tmp/restore.dump ]; then
+    sudo -Hu postgres psql -d "$PG_DB" -c "DROP OWNED BY $PG_USER CASCADE;"
+    sudo -Hu postgres pg_restore -d "$PG_DB" \
+      /tmp/restore.dump
+  elif [ -f /tmp/restore.sql ]; then
+    sudo -Hu postgres psql -d "$PG_DB" -c "DROP OWNED BY $PG_USER CASCADE;"
+    sudo -Hu postgres psql -d "$PG_DB" < \
+      /tmp/restore.sql
   fi
 
   # --
