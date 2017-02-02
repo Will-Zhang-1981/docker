@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+path='//Connector[@port="8080"]'
+file=/opt/jira/conf/server.xml
+
+xmlstarlet ed --inplace --pf --ps --insert $path --type "attr" --name "proxyPort" --value "${PORT:-443}" $file
+xmlstarlet ed --inplace --pf --ps --insert $path --type "attr" --name "scheme" --value "${SCHEME:-https}" $file
+xmlstarlet ed --inplace --pf --ps --insert $path --type "attr" --name "proxyName" --value "$HOSTNAME" $file
+exec sudo -Hu jira /opt/jira/bin/catalina.sh run
