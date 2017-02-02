@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+path='//Connector[@port="8085"]'
+file=/opt/bamboo/conf/server.xml
+
+[ "$SCHEME" ] && xmlstarlet ed --inplace --pf --ps --insert $path --type "attr" --name "scheme" --value "${SCHEME:-https}" $file
+[ "$PORT" ] && xmlstarlet ed --inplace --pf --ps --insert $path --type "attr" --name "proxyPort" --value "${PORT:-443}" $file
+[ "$HOSTNAME" ] && xmlstarlet ed --inplace --pf --ps --insert $path --type "attr" --name "proxyName" --value "$HOSTNAME" $file
+exec sudo -Hu bamboo /opt/bamboo/bin/catalina.sh run
