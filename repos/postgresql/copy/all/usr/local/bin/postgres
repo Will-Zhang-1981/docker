@@ -36,7 +36,7 @@ else
 
   if [ "$PG_EXT" ]; then
     for EXT in $PG_EXT
-      do sudo -Hu postgres psql -d "$PG_DB" -c "CREATE EXTENSION \"$EXT\""
+      do sudo -Hu postgres psql -d "$PG_DB" -c "CREATE EXTENSION IF NOT EXISTS \"$EXT\""
     done
   fi
 
