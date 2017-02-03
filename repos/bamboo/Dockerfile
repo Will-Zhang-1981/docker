@@ -6,8 +6,8 @@ ENV \
   PORT=""
 
 RUN apk --update add openjdk8-jre@community ca-certificates curl tar xmlstarlet@community \
-    docker@community go@community ruby ruby-dev build-base ruby-rdoc ruby-bigdecimal \
-    ruby-json ruby-io-console ruby-rake ruby-irb nodejs git shadow@community openssh
+    docker@community go@community ruby ruby-dev build-base ruby-rdoc ruby-bigdecimal cmake ruby-json \
+    ruby-io-console ruby-rake ruby-irb nodejs git shadow@community openssh
 RUN gem install bundler && npm install -g yarn
 
 RUN addgroup -Sg 1000 bamboo
