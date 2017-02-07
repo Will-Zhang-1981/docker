@@ -1,0 +1,71 @@
+#!/usr/bin/ruby
+
+require "slack"
+require "thor"
+
+# --
+
+BOT_USER = "tardisbot"
+AVATAR_URL = "https://avatars.slack-edge.com/2017-02-07/138065193429_dfda2e0ea832928435f8_72.png"
+CHANNEL = "#ops"
+
+# --
+
+Slack::Web::Client.config { |config| config.user_agent = "envygeeks/slackcli" }
+Slack.configure do |config|
+  config.token = ENV[
+    "SLACK_API_TOKEN"
+  ]
+end
+
+def post_message(type, plain, msg, color)
+  client = Slack::Web::Client.new
+  client.chat_postMessage({
+    :username => BOT_USER,
+    :icon_url => AVATAR_URL,
+    :channel => CHANNEL,
+    :attachments => [{
+      :fallback => plain,
+      :text => msg.gsub(/\\n/, "\n"),
+      :footer => "Docker: #{ENV["HOSTNAME"]}",
+      :pretext => type,
+      :color => color,
+    }]
+  })
+end
+
+# --
+
+class PostMessageCLI < Thor
+  desc "red", "Post a 'red' Slack message."
+  option  :type, :type => :string
+  option :plain, :type => :string
+
+  def red(msg)
+    post_message(
+      options[:type], options[:plain], msg, "#d10c20"
+    )
+  end
+
+  desc "blue", "Post a 'blue' Slack message."
+  option  :type, :type => :string
+  option :plain, :type => :string
+
+  def blue(msg)
+    post_message(
+      options[:type], options[:plain], msg, "#4183C4"
+    )
+  end
+
+  desc "green", "Post a 'green' Slack message."
+  option  :type, :type => :string
+  option :plain, :type => :string
+
+  def green(msg)
+    post_message(
+      options[:type], options[:plain], msg, "#36a64f"
+    )
+  end
+end
+
+PostMessageCLI.start
