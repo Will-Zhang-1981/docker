@@ -8,7 +8,8 @@ ENV \
 RUN apk --update add openjdk8-jre@community ca-certificates curl tar xmlstarlet@community \
     docker@community go@community ruby ruby-dev build-base ruby-rdoc ruby-bigdecimal cmake ruby-json \
     ruby-io-console ruby-rake ruby-irb nodejs git shadow@community openssh python2 python2-dev
-RUN gem install bundler && npm install -g yarn
+RUN npm install -g yarn gulp grunt webpack typescript uglify-js
+RUN gem install bundler scss
 
 RUN addgroup -Sg 1000 bamboo
 RUN adduser -HSG bamboo -u 1000 bamboo
