@@ -8,7 +8,7 @@ ENV \
 RUN apk --update add openjdk8-jre@community ca-certificates curl tar xmlstarlet@community \
     docker@community go@community ruby ruby-dev build-base ruby-rdoc ruby-bigdecimal cmake ruby-json \
     ruby-io-console ruby-rake ruby-irb nodejs git shadow@community openssh python2 python2-dev \
-    awscli@testing docker@community curl
+    awscli@testing docker@community
 
 RUN npm install -g yarn gulp grunt webpack typescript uglify-js
 RUN gem install bundler scss
@@ -42,7 +42,7 @@ RUN curl -Ls https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-jav
 RUN printf "\nbamboo.home=/var/bamboo" >> "/opt/bamboo/atlassian-bamboo/WEB-INF/classes/bamboo-init.properties"
 RUN chown -R bamboo:bamboo /opt/bamboo
 RUN chown -R bamboo:bamboo /var/bamboo
-RUN apk del tar curl shadow
+RUN apk del tar shadow
 RUN cleanup
 
 VOLUME /var/bamboo
