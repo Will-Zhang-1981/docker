@@ -9,7 +9,7 @@ RUN apk --update add openjdk8-jre@community ca-certificates curl tar xmlstarlet@
     ruby-io-console ruby-rake ruby-irb nodejs git shadow@community openssh python2 python2-dev \
     docker@community py-pip
 
-RUN gem install docker-template bundler
+RUN gem install docker-template bundler --no-ri --no-rdoc
 RUN npm install -g yarn gulp grunt webpack typescript uglify-js
 RUN pip install awscli
 
