@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+
+mkdir -p /var/ssl
+if [ "$ENABLE_SSL" ]; then
+  printf "rsa_cert_file=/var/ssl/vsftpd.pem" >> /etc/vsftpd/vsftpd.conf
+  printf "rsa_private_key_file=/var/ssl/vsftpd.pem" >> /etc/vsftpd/vsftpd.conf
+  openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /var/ssl/vsftpd.pem \
+       -out /var/ssl/vsftpd.pem
+
+  printf "ssl_tlsv1=YES" >> /etc/vsftpd.conf
+  printf "require_ssl_reuse=NO" >> /etc/vsftpd.conf
+  [ "$FORCE_SSL" ] && printf "force_local_data_ssl=YES" >> /etc/vsftpd/vsftpd.conf
+  [ "$FORCE_SSL" ] && printf "force_local_logins_ssl=YES" >> /etc/vsftpd/vsftpd.conf
+  printf "ssl_enable=YES" >> /etc/vsftpd/vsftpd.conf
+  printf "ssl_ciphers=HIGH" >> /etc/vsftpd.conf
+  printf "ssl_sslv3=NO" >> /etc/vsftpd.conf
+  printf "ssl_sslv2=NO" >> /etc/vsftpd.conf
+fi
+
+exec /usr/sbin/vsftpd
