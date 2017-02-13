@@ -7,7 +7,7 @@ ENV PORT=""
 RUN apk --update add openjdk8-jre@community ca-certificates curl tar xmlstarlet@community \
     docker@community go@community ruby ruby-dev build-base ruby-rdoc ruby-bigdecimal cmake ruby-json \
     ruby-io-console ruby-rake ruby-irb nodejs git shadow@community openssh python2 python2-dev \
-    docker@community py-pip
+    docker@community py-pip ttf-dejavu
 
 RUN gem install docker-template bundler --no-ri --no-rdoc
 RUN npm install -g yarn gulp grunt webpack typescript uglify-js

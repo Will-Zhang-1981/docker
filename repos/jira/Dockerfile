@@ -1,7 +1,7 @@
 FROM envygeeks/alpine
 COPY copy /
 RUN \
-  apk --update add openjdk8-jre@community ca-certificates curl tar xmlstarlet@community && \
+  apk --update add openjdk8-jre@community ca-certificates curl tar xmlstarlet@community ttf-dejavu && \
   mkdir -p /usr/src && cd /usr/src && mkdir -p /opt/jira && mkdir -p /var/jira && \
   curl -Ls https://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-core-7.3.0.tar.gz | tar \
     -xvz --directory /opt/jira --strip-components=1 \
