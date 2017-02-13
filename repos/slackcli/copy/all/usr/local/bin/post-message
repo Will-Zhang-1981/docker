@@ -25,10 +25,11 @@ def post_message(type, plain, msg, color)
     :icon_url => AVATAR_URL,
     :channel => CHANNEL,
     :attachments => [{
+      :pretext => type,
       :fallback => plain,
       :text => msg.gsub(/\\n/, "\n"),
       :footer => "Docker: #{ENV["HOSTNAME"]}",
-      :pretext => type,
+      :markdown => true,
       :color => color,
     }]
   })
@@ -37,6 +38,7 @@ end
 # --
 
 class PostMessageCLI < Thor
+  method_option :aliases => "error"
   desc "red", "Post a 'red' Slack message."
   option  :type, :type => :string
   option :plain, :type => :string
@@ -47,6 +49,7 @@ class PostMessageCLI < Thor
     )
   end
 
+  method_option :aliases => "info"
   desc "blue", "Post a 'blue' Slack message."
   option  :type, :type => :string
   option :plain, :type => :string
@@ -57,6 +60,7 @@ class PostMessageCLI < Thor
     )
   end
 
+  method_option :aliases => "success"
   desc "green", "Post a 'green' Slack message."
   option  :type, :type => :string
   option :plain, :type => :string
@@ -64,6 +68,27 @@ class PostMessageCLI < Thor
   def green(msg)
     post_message(
       options[:type], options[:plain], msg, "#36a64f"
+    )
+  end
+
+  desc "orange", "Post a 'orange' Slack message."
+  option  :type, :type => :string
+  option :plain, :type => :string
+
+  def orange(msg)
+    post_message(
+      options[:type], options[:plain], msg, "#d96b38"
+    )
+  end
+
+  method_option :aliases => "warn"
+  desc "yellow", "Post a 'yellow' Slack message."
+  option  :type, :type => :string
+  option :plain, :type => :string
+
+  def yellow(msg)
+    post_message(
+      options[:type], options[:plain], msg, "#daa038"
     )
   end
 end
