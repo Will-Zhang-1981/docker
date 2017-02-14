@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
-
+[ "$DEBUG" ] && set -x
 mkdir -p /var/ssl
+
 if [ "$ENABLE_SSL" = "true" ]; then
   printf "\nrsa_private_key_file=/var/ssl/vsftpd.key" >> /etc/vsftpd/vsftpd.conf
   printf "\nrsa_cert_file=/var/ssl/vsftpd.crt" >> /etc/vsftpd/vsftpd.conf
@@ -34,7 +35,7 @@ if [ "$USER" = "user" ] || [ "$PASSWORD" = "password" ]; then
   printf "Override USER and PASSWORD\n"
 fi
 
-adduser $USER
+adduser -D $USER || true
 echo "$USER:$PASSWORD" | chpasswd
 mkdir -p /home/$USER
 chown -R $USER:$USER \

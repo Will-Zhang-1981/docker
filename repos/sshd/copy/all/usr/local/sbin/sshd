@@ -1,9 +1,10 @@
 #!/bin/sh
 set -e
+[ "$DEBUG" ] && set -x
 ssh-keygen -A
 
 if [ "$USER" != "user" ] && [ "$PASSWORD" != "password" ]; then
-  adduser $USER
+  adduser -D $USER || true
   echo "$USER:$PASSWORD" | chpasswd
   mkdir -p /home/$USER
 
