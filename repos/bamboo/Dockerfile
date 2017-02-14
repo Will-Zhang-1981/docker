@@ -22,6 +22,10 @@ RUN usermod -aG docker bamboo
 RUN mkdir -p /opt/bamboo
 RUN mkdir -p /var/bamboo
 
+RUN curl -L "https://github.com/docker/compose/releases/download/<%=
+  @meta.compose_version %>docker-compose-Linux-x86_64" \
+    -o /usr/local/bin/docker-compose && chmod uog+rx /usr/local/bin/docker-compose
+
 RUN curl -Ls https://www.atlassian.com/software/bamboo/downloads/binary/atlassian-bamboo-<%= @meta.tag %>.tar.gz \
   | tar -xvz --directory /opt/bamboo --strip-components=1 \
     --no-same-owner
