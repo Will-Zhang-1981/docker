@@ -1,0 +1,43 @@
+#!/bin/bash
+set -e
+
+mkdir -p /var/ssl
+if [ "$ENABLE_SSL" = "true" ]; then
+  printf "\nrsa_private_key_file=/var/ssl/vsftpd.key" >> /etc/vsftpd/vsftpd.conf
+  printf "\nrsa_cert_file=/var/ssl/vsftpd.crt" >> /etc/vsftpd/vsftpd.conf
+
+  if [ ! -f /var/ssl/vsftpd.key ]
+    then openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+      -keyout /var/ssl/vsftpd.key \
+      -out /var/ssl/vsftpd.crt \
+      -subj "/CN=$DOMAIN"
+  fi
+
+  printf "\nssl_tlsv1=YES" >> /etc/vsftpd/vsftpd.conf
+  printf "\nrequire_ssl_reuse=NO" >> /etc/vsftpd/vsftpd.conf
+  [ "$FORCE_SSL" ] && printf "\nforce_local_data_ssl=YES" >> /etc/vsftpd/vsftpd.conf
+  [ "$FORCE_SSL" ] && printf "\nforce_local_logins_ssl=YES" >> /etc/vsftpd/vsftpd.conf
+  printf "\nssl_enable=YES" >> /etc/vsftpd/vsftpd.conf
+  printf "\nssl_ciphers=HIGH" >> /etc/vsftpd/vsftpd.conf
+  printf "\nssl_sslv3=NO" >> /etc/vsftpd/vsftpd.conf
+  printf "\nssl_sslv2=NO" >> /etc/vsftpd/vsftpd.conf
+
+  if [ "$FORCE_SSL" = "true" ]; then
+    printf "\nforce_local_logins_ssl=YES" >> /etc/vsftpd/vsftpd.conf
+    printf "\nforce_local_data_ssl=YES"   >> /etc/vsftpd/vsftpd.conf
+  fi
+fi
+
+printf "$USER\n" >> /etc/vsftpd/vsftpd.user_list
+if [ "$USER" = "user" ] || [ "$PASSWORD" = "password" ]; then
+  printf "You are running insecurely\n"
+  printf "Override USER and PASSWORD\n"
+fi
+
+adduser $USER
+echo "$USER:$PASSWORD" | chpasswd
+mkdir -p /home/$USER
+chown -R $USER:$USER \
+  /home/$USER
+
+exec /usr/sbin/vsftpd
