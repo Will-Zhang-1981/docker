@@ -1,5 +1,15 @@
 #!/bin/sh
 set -e
 ssh-keygen -A
+
+if [ "$USER" != "user" ] && [ "$PASSWORD" != "password" ]; then
+  adduser $USER
+  echo "$USER:$PASSWORD" | chpasswd
+  mkdir -p /home/$USER
+
+  chown -R $USER:$USER \
+    /home/$USER
+fi
+
 exec /usr/sbin/sshd \
   "$@"
