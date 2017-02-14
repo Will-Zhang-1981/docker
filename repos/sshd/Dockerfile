@@ -1,10 +1,10 @@
 FROM <%= @meta.distro %>
 MAINTAINER <%= @meta.maintainer %>
-ENV PASSWORD=password
+ENV PASS=password
 ENV USER=user
-RUN apk --update add openssh
+RUN apk --update add openssh linux-pam
 RUN cleanup
 COPY copy /
-CMD ["/usr/local/sbin/sshd", "-dD"]
+CMD ["/usr/local/sbin/sshd", "-D"]
 VOLUME /etc/ssh
 EXPOSE 22

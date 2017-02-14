@@ -3,14 +3,14 @@ set -e
 [ "$DEBUG" ] && set -x
 ssh-keygen -A
 
-if [ "$USER" != "user" ] && [ "$PASSWORD" != "password" ]; then
-  adduser -D $USER || true
-  echo "$USER:$PASSWORD" | chpasswd
-  mkdir -p /home/$USER
-
-  chown -R $USER:$USER \
-    /home/$USER
+if [ "$USER" = "user" ] || [ "$PASS" = "password" ]; then
+  printf "You are running insecurely\n"
+  printf "Override USER and PASS\n"
 fi
 
+adduser -D $USER || true
+echo "$USER:$PASS" | chpasswd
+mkdir -p /home/$USER
+chown -R $USER:$USER /home/$USER
 exec /usr/sbin/sshd \
   "$@"

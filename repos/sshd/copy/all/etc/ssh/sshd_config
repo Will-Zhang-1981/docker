@@ -18,15 +18,14 @@ MaxSessions 3
 # AuthorizedKeysCommandUser nobody
 AuthorizedKeysFile ~/.ssh/authorized_keys
 # AuthorizedPrincipalsFile none
-# PubkeyAuthentication yes
-
+PubkeyAuthentication yes
 
 # IgnoreUserKnownHosts no
 # HostbasedAuthentication no
 # ChallengeResponseAuthentication yes
 # RhostsRSAAuthentication no
 PasswordAuthentication yes
-# PermitEmptyPasswords no
+PermitEmptyPasswords no
 # IgnoreRhosts yes
 
 # GSSAPIAuthentication no
@@ -35,14 +34,14 @@ PasswordAuthentication yes
 # GSSAPICleanupCredentials yes
 # KerberosTicketCleanup yes
 # KerberosGetAFSToken no
-# UsePAM no
+UsePAM yes
 
 TCPKeepAlive yes
 # GatewayPorts no
 # X11Forwarding no
 # X11DisplayOffset 10
 # AllowAgentForwarding yes
-UsePrivilegeSeparation sandbox
+UsePrivilegeSeparation no
 Subsystem	sftp	/usr/lib/ssh/sftp-server
 # PermitUserEnvironment no
 # AllowTcpForwarding yes
