@@ -1,3 +1,4 @@
+mirror_host: mirror.envygeeks.io
 rootfs_template: ubuntu
 type: scratch
 helpers: true
