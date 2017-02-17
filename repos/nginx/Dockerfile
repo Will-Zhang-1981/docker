@@ -1,5 +1,7 @@
 FROM <%= @meta.distro %>
 MAINTAINER <%= @meta.maintainer %>
+ENV PERF=false
+
 RUN apk --update add nginx-lua lua5.1-socket lua-socket gettext
 RUN sed -ri 's!/var/www/localhost/htdocs!/srv/nginx!' /etc/passwd
 RUN sed -ri 's!:Linux User,{3}:!:nginx:!' /etc/passwd
@@ -13,6 +15,6 @@ VOLUME /srv/nginx
 VOLUME /etc/nginx/site.d
 VOLUME /etc/nginx/include.d
 VOLUME /etc/nginx/conf.d
-CMD ["/usr/sbin/nginx"]
+CMD ["/usr/local/bin/nginx"]
 EXPOSE 443
 EXPOSE 80

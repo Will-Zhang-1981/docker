@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+if [ "$PERF" = "true" ]
+  then cp /usr/share/nginx/perf.conf /etc/nginx/nginx.conf
+  else cp /usr/share/nginx/base.conf /etc/nginx/nginx.conf
+fi
+
+exec /usr/sbin/nginx
+# Bye Bye
