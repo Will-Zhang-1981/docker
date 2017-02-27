@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+pid=/run/minidlna/minidlna.pid
+touch $pid && chown minidlna:minidlna $pid
+sudo -HEu minidlna /usr/sbin/minidlnad \
+  -f /etc/minidlna.conf
