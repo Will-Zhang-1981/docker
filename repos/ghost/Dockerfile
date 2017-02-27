@@ -1,4 +1,4 @@
-FROM envygeeks/alpine:3.3
+FROM envygeeks/alpine
 MAINTAINER <%= @meta.maintainer %>
 RUN \
   apk --update add nodejs sqlite openssl libuv git sqlite-dev build-base \
