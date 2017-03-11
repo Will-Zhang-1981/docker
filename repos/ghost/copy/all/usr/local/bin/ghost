@@ -1,6 +1,10 @@
 #!/bin/sh
-set -e; cd /usr/local/lib/ghost
-if [ "$GHOST_ENV" = "production" ]; then
-  npm start --production; else npm start --development
-  echo "Ghost in %s" "$GHOST_ENV"
+
+set -e
+chown -Rh ghost:ghost /srv/ghost
+cd /usr/local/lib/ghost
+
+if [ "$GHOST_ENV" = "production" ]
+  then exec sudo -EHu ghost npm start --production
+  else exec sudo -EHu ghost npm start --development
 fi
