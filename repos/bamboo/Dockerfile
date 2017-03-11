@@ -23,6 +23,7 @@ RUN usermod -aG docker bamboo
 RUN mkdir -p /opt/bamboo
 RUN mkdir -p /var/bamboo
 
+RUN echo 'bamboo ALL=NOPASSWD:ALL' >> /etc/sudoers
 RUN curl -L "https://github.com/docker/compose/releases/download/<%=
   @meta.compose_version %>docker-compose-Linux-x86_64" \
     -o /usr/local/bin/docker-compose && chmod uog+rx /usr/local/bin/docker-compose
