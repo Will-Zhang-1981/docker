@@ -31,4 +31,5 @@ RUN apk del sqlite-dev build-base linux-headers openssl-dev \
 RUN cleanup
 COPY copy /
 VOLUME /srv/ghost
+CMD ["/usr/local/bin/ghost"]
 EXPOSE 4000
