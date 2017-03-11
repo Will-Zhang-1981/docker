@@ -36,6 +36,9 @@ RUN curl -Ls https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-jav
     -xvz --directory /opt/bamboo/lib --no-same-owner --strip-components=1 \
     mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar
 
+RUN GOPATH=$HOME/go go get github.com/golang/example/hello
+RUN rm -rf $HOME/go
+
 RUN printf "\nbamboo.home=/var/bamboo" >> "/opt/bamboo/atlassian-bamboo/WEB-INF/classes/bamboo-init.properties"
 RUN chown -R bamboo:bamboo /opt/bamboo
 RUN chown -R bamboo:bamboo /var/bamboo
